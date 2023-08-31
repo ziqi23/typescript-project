@@ -1,0 +1,50 @@
+.homepage-header {
+    position: -webkit-sticky;
+    position: sticky;
+    top: -1px;
+    background-color: rgb(86, 30, 176);
+    display: flex;
+    justify-content: space-between;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    align-items: center;
+    height: 62px;
+    z-index: 20;
+}
+
+.homepage-header-left {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 6%;
+    height: inherit;
+}
+.homepage-header-left a {
+    width: 80%;
+    height: 80%;
+}
+
+.homepage-header-left img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 1;
+}
+
+.homepage-header-left img:hover {
+    cursor: pointer;
+}
+
+.homepage-header-right {
+    display: flex;
+}
+
+.homepage-header-right div {
+    padding: 10px;
+    border-radius: 5px;
+    margin-right: 20px;
+}
+
+.homepage-header-right div:hover {
+    cursor: pointer;
+    background-color: aliceblue;
+}

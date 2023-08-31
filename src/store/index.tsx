@@ -1,22 +1,25 @@
 import {createStore, combineReducers, applyMiddleware, compose} from 'redux'
 import thunk from 'redux-thunk'
-import eventReducer from './event';
+import ticketReducer from './ticket';
+import stadiumReducer from './stadium';
 
-const preloadedState = {};
-
+// Combine reducers
 const rootReducer = combineReducers({
-    event: eventReducer
+    ticket: ticketReducer,
+    stadium: stadiumReducer
 });
 
+// Apply middleware based on application environment
 let enhancer : any;
 if (process.env.NODE_ENV === 'production') {
     enhancer = applyMiddleware(thunk)
 } else {
     const logger = require('redux-logger').default
-    // const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
     enhancer = compose(applyMiddleware(thunk, logger))
 }
 
+// Pass in combined reducers and applied middleware to create global store
+const preloadedState = {};
 const configureStore = () => {
     return createStore(rootReducer, preloadedState, enhancer);
 };

@@ -1,0 +1,17 @@
+.event-card {
+    background-color: azure;
+    margin: 20px;
+    width: 300px;
+    height: 300px;
+    border-radius: 5px;
+}
+
+.event-card img {
+    width: inherit;
+    height: 200px;
+    object-fit: contain;
+}
+
+.event-card:hover {
+    cursor: pointer;
+}
