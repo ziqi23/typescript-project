@@ -5,27 +5,22 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import configureStore from './store';
+import store from './store';
 import * as eventActions from './store/ticket';
 import * as stadiumActions from './store/stadium';
 
-let store = configureStore();
-
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch;
-
-declare global {
-  interface Window {
-    store : any;
-    eventActions : any;
-    stadiumActions : any;
-  }
-}
-if (process.env.NODE_ENV !== 'production') {
-  window.store = store;
-  window.eventActions = eventActions;
-  window.stadiumActions = stadiumActions;
-}
+// declare global {
+//   interface Window {
+//     store : any;
+//     eventActions : any;
+//     stadiumActions : any;
+//   }
+// }
+// if (process.env.NODE_ENV !== 'production') {
+//   window.store = store;
+//   window.eventActions = eventActions;
+//   window.stadiumActions = stadiumActions;
+// }
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

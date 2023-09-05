@@ -1,16 +1,53 @@
-import { showStadium } from "../store/stadium";
-import { useEffect } from 'react';
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "..";
+import './VenueMap.css'
+import { add, remove } from '../store/selectedSection';
+import { getStadium } from "../store/stadium";
+import { useEffect, useRef, useState } from 'react';
+import { useAppSelector, useAppDispatch } from "../store/hooks";
 
 function VenueMap() {
-    const useAppDispatch: () => AppDispatch = useDispatch;
+    const [zoom, setZoom] = useState(1);
+    const mapElement = useRef<HTMLDivElement>(null);
     const dispatch = useAppDispatch();
-    let tmpStr = "https://api.tickpick.com/1.0/venues/chart/v2?venueId=LEVISSTADIUM_BEY2";
+    const venueData = useAppSelector(state => state.stadium.data);
+    let tmpStr = "https://api.tickpick.com/1.0/venues/chart/v2?venueId=ARROWHEAD_BEY";
+
     useEffect(() => {
-        dispatch(showStadium(tmpStr));
+        dispatch(getStadium(tmpStr));
     }, [])
-    return null;
+
+    useEffect(() => {
+        function handleWheel(e : WheelEvent) {
+            if (e.deltaY > 0) {
+                setZoom(zoom => zoom * 0.99);
+            }
+            else {
+                setZoom(zoom => zoom * 1.01);
+            }
+        }
+
+        window.addEventListener('wheel', handleWheel);
+        // return mapElement?.current?.removeEventListener('scroll', handleScroll);
+
+    }, [mapElement.current])
+
+    // Use section # data to also create tooltip of row x - y
+    if (venueData) {
+        return (
+            <div className="venue-map-container" ref={mapElement}>
+                <svg className="venue-map" width="1200" height="1000" stroke="red" fill="grey">
+                    {venueData.map(section => (
+                        <>
+                        <path data-section={section.id} data-selected="false" d={section.svg}></path>
+                        <text x={section.textX - 25} y={section.textY - 25} stroke='#000000'>{section.id}</text>
+                        </>
+                    ))}
+                </svg>
+            </div>
+        )
+    }
+    else {
+        return null;
+    }
 }
 
 export default VenueMap;
