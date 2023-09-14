@@ -34,7 +34,7 @@ function VenueMap() {
     if (venueData) {
         return (
             <div className="venue-map-container" ref={mapElement}>
-                <svg className="venue-map" width="1200" height="1000" stroke="red" fill="grey">
+                <svg className="venue-map" width="1000" height="1000" stroke="red" fill="grey" transform={`scale(${zoom} ${zoom})`}>
                     {venueData.map(section => (
                         <>
                         <path data-section={section.id} data-selected="false" d={section.svg}></path>
@@ -42,6 +42,9 @@ function VenueMap() {
                         </>
                     ))}
                 </svg>
+                <button onClick={() => {setZoom(zoom * 1.1)}}>Zoom In</button>
+                <button onClick={() => {setZoom(1)}}>Reset</button>
+                <button onClick={() => {setZoom(zoom * 0.9)}}>Zoom Out</button>
             </div>
         )
     }

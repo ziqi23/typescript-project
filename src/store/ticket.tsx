@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice, PayloadAction, ThunkAction } from '@redu
 
 type Ticket = {
     id: string, // identifier
+    eid: string, // event identifier
     sid: string, // section
     r: string, // row
     p: number, // price
@@ -20,6 +21,7 @@ type Ticket = {
 
 type ParsedTicket = {
     id: string,
+    eventId: string,
     section: string,
     row: string,
     price: number,
@@ -67,13 +69,20 @@ export const ticketSlice = createSlice({
 // }
 
 export const getTicket = createAsyncThunk('ticket/getTicket', async (eventUrl : string) => {
-    const res = await fetch(eventUrl);
+    const res = await fetch(eventUrl, {
+        method: "GET",
+        headers: {
+            "User-Agent": "PostmanRuntime/7.33.0",
+            "Access-Control-Allow-Origin": "*"
+        }
+    });
     const data = await res.json();
+    console.log(data)
     // parse data here. tickets need data such as price, quantity, location and special features / notices
     let formattedTicket : ParsedTicket[] = [];
     data.forEach((ticket : Ticket) => {
         if (ticket.n.search(/parking only/i) === -1) {
-            formattedTicket.push({ id: ticket.id, section: ticket.sid, row: ticket.r, price: ticket.p, quantity: ticket.q, description: ticket.n })
+            formattedTicket.push({ id: ticket.id, eventId: ticket.eid, section: ticket.sid, row: ticket.r, price: ticket.p, quantity: ticket.q, description: ticket.n })
         }
     })
     return formattedTicket;

@@ -2,11 +2,12 @@ import './TicketListing.css';
 import TicketListingCard from "./TicketListingCard";
 import { getTicket } from "../store/ticket";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 function TicketListing() {
     type ParsedTicket = {
         id: string,
+        eventId: string,
         section: string,
         row: string,
         price: number,
@@ -22,6 +23,9 @@ function TicketListing() {
 
     useEffect(() => {
         dispatch(getTicket(tmpUrl));
+    }, [])
+
+    useEffect(() => {
         if (selectedSections.length === 0) {
             setDisplayedTickets(allTickets)
         }
@@ -35,8 +39,30 @@ function TicketListing() {
             })
             setDisplayedTickets(ticketsToDisplay);
         }
-    }, [allTickets, selectedSections])
+    }, [selectedSections])
     
+    function handleMinPrice(e : ChangeEvent) {
+        let minPrice = parseInt((e.target as HTMLInputElement).value);
+        let ticketsToDisplay : ParsedTicket[] | null;
+        if (displayedTickets) {
+            ticketsToDisplay = displayedTickets.filter(ticket => ticket.price >= minPrice);
+        } else {
+            ticketsToDisplay = null;
+        }
+        setDisplayedTickets(ticketsToDisplay);
+    }
+    
+    function handleMaxPrice(e : ChangeEvent) {
+        let maxPrice = parseInt((e.target as HTMLInputElement).value);
+        let ticketsToDisplay : ParsedTicket[] | null;
+        if (displayedTickets) {
+            ticketsToDisplay = displayedTickets.filter(ticket => ticket.price <= maxPrice);
+        } else {
+            ticketsToDisplay = null;
+        }
+        setDisplayedTickets(ticketsToDisplay);
+    }
+
     return (
         <div className='ticket-container'>
             <div className="filters">
@@ -44,6 +70,7 @@ function TicketListing() {
                 <button>Select Quantity</button>
                 <button>Filter by description</button>
             </div>
+            <div>Price Range <input onChange={handleMinPrice}></input> to <input onChange={handleMaxPrice}></input></div>
             <div>
                 {displayedTickets?.map(ticket => (
                     <TicketListingCard {...ticket}/>
