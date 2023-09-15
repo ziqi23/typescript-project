@@ -1,7 +1,7 @@
 import './TicketListing.css';
 import TicketListingCard from "./TicketListingCard";
-import { getTicket } from "../store/ticket";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { getTicket } from "../../../store/ticket";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { ChangeEvent, useEffect, useState } from "react";
 
 function TicketListing() {

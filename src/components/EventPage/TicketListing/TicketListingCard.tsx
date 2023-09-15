@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAppSelector } from '../store/hooks';
+import { useAppSelector } from '../../../store/hooks';
 import './TicketListingCard.css'
 import { Link } from 'react-router-dom';
 

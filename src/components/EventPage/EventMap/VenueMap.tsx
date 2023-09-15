@@ -1,8 +1,8 @@
 import './VenueMap.css'
-import { add, remove } from '../store/selectedSection';
-import { getStadium } from "../store/stadium";
+import { add, remove } from '../../../store/selectedSection';
+import { getStadium } from "../../../store/stadium";
 import { useEffect, useRef, useState } from 'react';
-import { useAppSelector, useAppDispatch } from "../store/hooks";
+import { useAppSelector, useAppDispatch } from "../../../store/hooks";
 
 function VenueMap() {
     const [zoom, setZoom] = useState(1);

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { add, remove } from '../store/selectedSection';
-import { useAppSelector, useAppDispatch } from "../store/hooks";
+import { add, remove } from '../../../store/selectedSection';
+import { useAppSelector, useAppDispatch } from "../../../store/hooks";
 import './EventHomepage.css'
-import Header from "./Header";
-import TicketListing from "./TicketListing";
-import VenueMap from "./VenueMap";
+import Header from "./../../SplashPage/Header/Header";
+import TicketListing from "./../TicketListing/TicketListing";
+import VenueMap from "./../EventMap/VenueMap";
 
 function EventHomepage() {
     // Should take in an event ID, fetch database for relevant URLs, then call API for event data

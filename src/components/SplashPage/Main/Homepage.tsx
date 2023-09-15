@@ -1,10 +1,10 @@
 import "./Homepage.css"
-import EventCard from "./EventCard";
-import Header from "./Header";
-import splash1 from "../assets/splash1.jpg";
-import splash2 from "../assets/splash2.jpg";
-import splash3 from "../assets/splash3.jpg";
-import splash4 from "../assets/splash4.jpg";
+import EventCard from "./../Events/EventCard";
+import Header from "./../Header/Header";
+import splash1 from "../../../assets/splash1.jpg";
+import splash2 from "../../..//splash2.jpg";
+import splash3 from "../../../assets/splash3.jpg";
+import splash4 from "../../../assets/splash4.jpg";
 import SearchBar from "./SearchBar";
 
 type EventDetails = {

@@ -8,7 +8,7 @@ type EventDetails = {
     time : string
 }
 function EventCard(data : EventDetails) {
-    let eventImage = require('../assets/beyonce.jpeg');
+    let eventImage = require('../../../assets/beyonce.jpeg');
     console.log(data.imageUrl)
     return (
         <Link to="/event">

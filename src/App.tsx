@@ -1,9 +1,9 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Homepage from './components/Homepage';
+import Homepage from './components/SplashPage/Main/Homepage';
 import { Switch, Route } from "react-router-dom";
-import EventHomepage from './components/EventHomepage';
+import EventHomepage from './components/EventPage/Main/EventHomepage';
 
 function App() {
   return (
