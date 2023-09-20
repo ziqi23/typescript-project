@@ -3,6 +3,7 @@ import thunk from 'redux-thunk'
 import ticketReducer from './ticket';
 import stadiumReducer from './stadium';
 import selectedSectionReducer from './selectedSection';
+import eventReducer from './event'
 import { configureStore } from '@reduxjs/toolkit';
 import logger from 'redux-logger';
 
@@ -24,7 +25,8 @@ const store = configureStore({
     reducer: {
         ticket: ticketReducer,
         stadium: stadiumReducer,
-        selectedSection: selectedSectionReducer
+        selectedSection: selectedSectionReducer,
+        event: eventReducer
     },
     // middleware: (defaultMiddleware) => defaultMiddleware().concat([thunk, logger])
 });

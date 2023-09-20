@@ -3,6 +3,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import userRouter from './router/userRouter';
 import alertRouter from './router/alertRouter';
+import eventRouter from './router/eventRouter';
 import dotenv from 'dotenv'
 import bodyParser from 'body-parser';
 
@@ -16,6 +17,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json())
 app.use('/api/users', userRouter);
 app.use('/api/alerts', alertRouter);
+app.use('/api/events', eventRouter);
 
 dotenv.config();
 const MONGO_PASSWORD = process.env.SECRET;

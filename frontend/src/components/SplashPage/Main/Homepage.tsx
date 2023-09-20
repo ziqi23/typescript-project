@@ -6,6 +6,9 @@ import splash2 from "../../..//splash2.jpg";
 import splash3 from "../../../assets/splash3.jpg";
 import splash4 from "../../../assets/splash4.jpg";
 import SearchBar from "./SearchBar";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getEvents } from "../../../store/event";
+import { useEffect } from "react";
 
 type EventDetails = {
     imageUrl : string,
@@ -14,7 +17,25 @@ type EventDetails = {
     time : string
 }
 
+type Event = {
+    _id : string,
+    tickpickURL : string,
+    stadiumURL : string,
+    eventCategory : string,
+    eventTitle : string,
+    eventImageURL : string,
+    eventLocation : string,
+    eventTime : string
+}
+
 function Homepage() {
+    const dispatch = useAppDispatch();
+    const events : Event[] | null = useAppSelector(state => state.event.data);
+    console.log(events)
+    useEffect(() => {
+        dispatch(getEvents());
+    }, [])
+
     let placeholderEventDetails : EventDetails = {
         imageUrl: '../assets/beyonce.jpeg',
         name: "Beyonce",
@@ -29,6 +50,9 @@ function Homepage() {
             <img src={splash1}></img>
             <SearchBar />
         </div>
+        {/* {events && events.forEach(event => {
+            <h1>1</h1>
+        })} */}
         <EventCard 
         imageUrl={placeholderEventDetails.imageUrl} 
         name={placeholderEventDetails.name}
