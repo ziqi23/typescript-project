@@ -1,8 +1,10 @@
 // console.log('hi tsx')
 import express from 'express';
 import mongoose from 'mongoose';
-import router from './router';
+import userRouter from './router/userRouter';
+import alertRouter from './router/alertRouter';
 import dotenv from 'dotenv'
+import bodyParser from 'body-parser';
 
 const app = express();
 
@@ -10,7 +12,10 @@ app.listen(5000, () => {
     console.log("Server running on port 5000");
 })
 
-app.use('/api/users', router);
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json())
+app.use('/api/users', userRouter);
+app.use('/api/alerts', alertRouter);
 
 dotenv.config();
 const MONGO_PASSWORD = process.env.SECRET;
