@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { add, remove } from '../../../store/selectedSection';
 import { useAppSelector, useAppDispatch } from "../../../store/hooks";
 import './EventHomepage.css'
@@ -8,6 +9,9 @@ import VenueMap from "./../EventMap/VenueMap";
 
 function EventHomepage() {
     // Should take in an event ID, fetch database for relevant URLs, then call API for event data
+    const { id } = useParams<{id : string}>();
+    const events = useAppSelector(state => state.event.data);
+    const currentEvent = events ? events.filter(event => event._id === id)[0] : null;
     const selectedSections = useAppSelector(state => state.selectedSection.data);
     const dispatch = useAppDispatch();
 
@@ -47,8 +51,8 @@ function EventHomepage() {
         <>
         <Header />
         <div className="event-main">
-        <TicketListing />
-        <VenueMap />
+        <TicketListing url={currentEvent?.tickpickURL}/>
+        <VenueMap url={currentEvent?.stadiumURL}/>
         </div> 
         </>
     );

@@ -8,7 +8,7 @@ import splash4 from "../../../assets/splash4.jpg";
 import SearchBar from "./SearchBar";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getEvents } from "../../../store/event";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 type EventDetails = {
     imageUrl : string,
@@ -17,32 +17,33 @@ type EventDetails = {
     time : string
 }
 
-type Event = {
-    _id : string,
-    tickpickURL : string,
-    stadiumURL : string,
-    eventCategory : string,
-    eventTitle : string,
-    eventImageURL : string,
-    eventLocation : string,
-    eventTime : string
-}
-
 function Homepage() {
     const dispatch = useAppDispatch();
-    const events : Event[] | null = useAppSelector(state => state.event.data);
-    console.log(events)
+    const events = useAppSelector(state => state.event.data);
+    const [filteredEvents, setFilteredEvents] = useState(events);
     useEffect(() => {
         dispatch(getEvents());
     }, [])
-
-    let placeholderEventDetails : EventDetails = {
-        imageUrl: '../assets/beyonce.jpeg',
-        name: "Beyonce",
-        location: "Levi's Stadium",
-        time: "Wed, Aug 30, 7:00 PM"
+    
+    function handleFilter(e : any) {
+        const filter = e.target.getAttribute("data-type");
+        switch (filter) {
+            case "all":
+                setFilteredEvents(events);
+                break;
+            case "concert":
+                setFilteredEvents(events ? events.filter(ele => ele.eventCategory === "concert") : null);
+                break;
+            case "theatre":
+                setFilteredEvents(events ? events.filter(ele => ele.eventCategory === "theatre") : null);
+                break;
+            case "sport":
+                setFilteredEvents(events ? events.filter(ele => ele.eventCategory === "sport") : null);
+                break;
+            default:
+                break;
+        }
     }
-
     return (
         <>
         <Header />
@@ -50,15 +51,21 @@ function Homepage() {
             <img src={splash1}></img>
             <SearchBar />
         </div>
-        {/* {events && events.forEach(event => {
-            <h1>1</h1>
-        })} */}
-        <EventCard 
-        imageUrl={placeholderEventDetails.imageUrl} 
-        name={placeholderEventDetails.name}
-        location={placeholderEventDetails.location}
-        time={placeholderEventDetails.time}
-        />
+        <button data-type="all" onClick={(e) => handleFilter(e)}>All events</button>
+        <button data-type="concert" onClick={(e) => handleFilter(e)}>Concerts</button>
+        <button data-type="theatre" onClick={(e) => handleFilter(e)}>Theatre</button>
+        <button data-type="sport" onClick={(e) => handleFilter(e)}>Sports</button>
+        <div>
+            {filteredEvents && filteredEvents.map(event => (
+                <EventCard 
+                id={event._id}
+                imageUrl={event.eventImageURL} 
+                name={event.eventTitle}
+                location={event.eventLocation}
+                time={event.eventTime}
+                />
+            ))}
+        </div>
         </>
     );
 }

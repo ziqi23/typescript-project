@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAppSelector } from '../../../store/hooks';
 import './TicketListingCard.css'
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 type ParsedTicket = {
     id: string,
@@ -18,6 +18,19 @@ function TicketListingCard({id, eventId, section, price, row, quantity, descript
     const selectedSections = useAppSelector(state => state.selectedSection.data);
     const [confirmationVisible, setConfirmationVisible] = useState(false);
     const [alertVisible, setAlertVisible] = useState(false);
+    
+    // function createAlert(desiredSections : Number[], desiredPrice : String) {
+    //     const eventId = useParams<{id : string}>();
+    //     fetch('/api/alerts', {
+    //         method: "POST",
+    //         // body: {
+    //         //     // userId, 
+    //         //     eventId, 
+    //         //     desiredSections, 
+    //         //     desiredPrice
+    //         // }
+    //     })
+    // }
 
     function handleMouseEnter() {
         const mouseHoverSection = document.querySelector(`[data-section="${section}"]`);

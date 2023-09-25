@@ -71,10 +71,10 @@ export const ticketSlice = createSlice({
 export const getTicket = createAsyncThunk('ticket/getTicket', async (eventUrl : string) => {
     const res = await fetch(eventUrl, {
         method: "GET",
-        headers: {
-            "User-Agent": "PostmanRuntime/7.33.0",
-            "Access-Control-Allow-Origin": "*"
-        }
+        // headers: {
+        //     "User-Agent": "PostmanRuntime/7.33.0",
+        //     "Access-Control-Allow-Origin": "*"
+        // }
     });
     const data = await res.json();
     console.log(data)

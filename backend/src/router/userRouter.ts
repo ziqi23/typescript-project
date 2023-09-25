@@ -6,12 +6,13 @@ import jwt from 'jsonwebtoken';
 const router = express.Router();
 
 router.post('/login', async (req, res) => {
-    const {email, password} = req.body;
-    if (!email || !password) {
+    console.log("body is", req.body)
+    const {credential, password} = req.body;
+    if (!credential || !password) {
         res.status(400);
         throw new Error("All fields are mandatory");
     }
-    const user = await UserModel.findOne({email});
+    const user = await UserModel.findOne({email: credential}) || await UserModel.findOne({username: credential});
     if (user && (await bcrypt.compare(password, user.passwordHash))) {
         const accessToken = jwt.sign(
             {
@@ -29,6 +30,15 @@ router.post('/login', async (req, res) => {
         res.status(401);
         throw new Error("Email or password is not valid");
     }
+})
+
+router.post('/currentUser', async (req, res) => {
+    const {token} = req.body;
+    if (!token) {
+        throw new Error("No valid token");
+    }
+    const user = jwt.decode(token);
+    res.send({user})
 })
 
 router.post('/register', async (req, res) => {

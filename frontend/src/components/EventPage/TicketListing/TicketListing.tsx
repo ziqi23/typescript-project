@@ -4,7 +4,10 @@ import { getTicket } from "../../../store/ticket";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { ChangeEvent, useEffect, useState } from "react";
 
-function TicketListing() {
+type Ticket = {
+    url: string | undefined
+}
+function TicketListing(data : Ticket) {
     type ParsedTicket = {
         id: string,
         eventId: string,
@@ -19,10 +22,11 @@ function TicketListing() {
     const allTickets = useAppSelector(state => state.ticket.data)
     const [displayedTickets, setDisplayedTickets] = useState<ParsedTicket[] | null>([]);
     const dispatch = useAppDispatch();
-    const tmpUrl = "https://api.tickpick.com/1.0/listings/internal/event/5555490?trackView=true&lid=5555490";
 
     useEffect(() => {
-        dispatch(getTicket(tmpUrl));
+        if (data.url) {
+            dispatch(getTicket(data.url));
+        }
     }, [])
 
     useEffect(() => {

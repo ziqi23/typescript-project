@@ -17,19 +17,20 @@ router.get('/:id', async (req, res) => {
 
 type Alert = {
     userId: String,
-    eventURL: String,
+    eventId: String,
     desiredSections: String,
     desiredPrice: String
 }
 
 router.post('/', async (req, res) => {
-    const {userId, eventURL, desiredSections, desiredPrice} : Alert = req.body;
+    const {userId, eventId, desiredSections, desiredPrice} : Alert = req.body;
+    if (!userId || !eventId || !desiredSections || !desiredPrice) {
+        throw new Error("Missing fields");
+    }
     const formattedDesiredSections : Number[] = desiredSections.split(" ").map(ele => parseInt(ele))
     const time = Date.now();
     const eventTime = Date.now(); // TO UPDATE: Event name, event picture
-    if (!userId || !eventURL || !desiredSections || !desiredPrice) {
-        throw new Error("Missing fields");
-    }
+    const eventURL = eventId;
 
     const alert = await AlertModel.create({
         userId,

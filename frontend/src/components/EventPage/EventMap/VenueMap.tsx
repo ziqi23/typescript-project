@@ -4,15 +4,19 @@ import { getStadium } from "../../../store/stadium";
 import { useEffect, useRef, useState } from 'react';
 import { useAppSelector, useAppDispatch } from "../../../store/hooks";
 
-function VenueMap() {
+type Venue = {
+    url: string | undefined
+}
+function VenueMap(data : Venue) {
     const [zoom, setZoom] = useState(1);
     const mapElement = useRef<HTMLDivElement>(null);
     const dispatch = useAppDispatch();
     const venueData = useAppSelector(state => state.stadium.data);
-    let tmpStr = "https://api.tickpick.com/1.0/venues/chart/v2?venueId=ARROWHEAD_BEY";
 
     useEffect(() => {
-        dispatch(getStadium(tmpStr));
+        if (data.url) {
+            dispatch(getStadium(data.url));
+        }
     }, [])
 
     useEffect(() => {

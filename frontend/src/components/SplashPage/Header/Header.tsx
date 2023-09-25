@@ -13,12 +13,12 @@ function Header() {
             </div>
             <div className="homepage-header-right">
                 <div>
-                    <Link to={"/profile"}>
+                    <Link to={"/signup"}>
                         Sign Up
                     </Link>
                 </div>
                 <div>
-                    <Link to={"/profile"}>
+                    <Link to={"/login"}>
                         Log In
                     </Link>
                 </div>
