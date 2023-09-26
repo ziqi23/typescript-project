@@ -1,4 +1,5 @@
-.ticket-container {
+.ticket-listing-container {
+    width: 600px;
     height: 100vh;
     overflow-y: scroll
 }

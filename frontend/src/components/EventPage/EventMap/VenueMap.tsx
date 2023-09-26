@@ -38,7 +38,7 @@ function VenueMap(data : Venue) {
     if (venueData) {
         return (
             <div className="venue-map-container" ref={mapElement}>
-                <svg className="venue-map" width="1000" height="1000" stroke="red" fill="grey" transform={`scale(${zoom} ${zoom})`}>
+                <svg className="venue-map" stroke="red" fill="grey" transform={`scale(${zoom} ${zoom})`}>
                     {venueData.map(section => (
                         <>
                         <path data-section={section.id} data-selected="false" d={section.svg}></path>

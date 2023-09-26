@@ -48,13 +48,13 @@ function EventHomepage() {
     }, [selectedSections])
     
     return (
-        <>
-        <Header />
-        <div className="event-main">
-        <TicketListing url={currentEvent?.tickpickURL}/>
-        <VenueMap url={currentEvent?.stadiumURL}/>
-        </div> 
-        </>
+        <div className="event-page">
+            <Header />
+            <div className="event-main">
+            <TicketListing url={currentEvent?.tickpickURL}/>
+            <VenueMap url={currentEvent?.stadiumURL}/>
+            </div> 
+        </div>
     );
 }
 

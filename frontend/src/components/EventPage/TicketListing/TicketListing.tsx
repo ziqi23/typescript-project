@@ -68,7 +68,7 @@ function TicketListing(data : Ticket) {
     }
 
     return (
-        <div className='ticket-container'>
+        <div className='ticket-listing-container'>
             <div className="filters">
                 <button>Lowest Price First</button>
                 <button>Select Quantity</button>

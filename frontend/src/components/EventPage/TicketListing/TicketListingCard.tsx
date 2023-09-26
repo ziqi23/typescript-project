@@ -53,18 +53,21 @@ function TicketListingCard({id, eventId, section, price, row, quantity, descript
 
     return (
         <>
-        <div className="card" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={() => setConfirmationVisible(true)}>
-            <div>Section {section}</div>
-            <div>Row {row}</div>
-            <div>${price}</div>
-            <div>{quantity} left</div>
+        <div className="ticket-listing-card" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={() => setConfirmationVisible(true)}>
+            <div className='ticket-pricing'>
+                <p className='ticket-pricing-bold'>${price} each, </p><p>all fees included</p>
+            </div>
+            <div className='ticket-quantity'>{quantity} tickets</div>
+            <div className='ticket-location'>
+                <p>Section {section}, </p><p>Row {row}</p>
+            </div>
             <div>{description}</div>
         </div>
         {confirmationVisible && (
             <div className="confirmation-panel">
                 <div onClick={() => setConfirmationVisible(false)}>X</div>
                 <div className="mini-venue-map-container">
-                    <svg className="venue-map" width="500" height="400" stroke="red" fill="grey">
+                    <svg className="mini-venue-map" width="500" height="400" stroke="red" fill="grey">
                         {venueData?.map(section => (
                             <>
                             <path data-section={section.id} data-selected="false" d={section.svg} transform='scale(0.2, 0.2)'></path>

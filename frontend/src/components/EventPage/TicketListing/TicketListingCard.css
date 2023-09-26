@@ -1,8 +1,37 @@
-.card {
+.ticket-listing-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 1rem;
     height: 150px;
-    width: 400px;
-    border: 1px solid gray;
+    width: 500px;
+    border-bottom: 1px solid rgb(225, 225, 225);
     margin: 20px;
+}
+
+.ticket-listing-card:hover {
+    cursor: pointer;
+    background-color: rgb(225, 225, 225);
+}
+
+.ticket-pricing {
+    font-size: 16px;
+}
+
+.ticket-quantity {
+
+}
+
+.ticket-pricing p{
+    display: inline;
+}
+
+.ticket-location p{
+    display: inline;
+}
+
+
+.ticket-pricing-bold {
+    font-weight: bold;
 }
 
 .confirmation-panel {

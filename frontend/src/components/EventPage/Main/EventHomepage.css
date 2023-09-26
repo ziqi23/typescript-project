@@ -1,3 +1,6 @@
+.event-page {
+    overflow: hidden;
+}
 .event-main {
     display: flex;
 }
