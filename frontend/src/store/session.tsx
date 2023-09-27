@@ -14,7 +14,7 @@ type FullUser = {
 interface SessionState {
     loading: boolean;
     error: null | string;
-    data: null | string;
+    data: User | null;
 }
 
 const initialState = {
@@ -37,7 +37,7 @@ export const sessionSlice = createSlice({
         .addCase(startSession.pending, (state) => {
             state.loading = true;
         })
-        .addCase(startSession.fulfilled, (state, action : PayloadAction<string>) => {
+        .addCase(startSession.fulfilled, (state, action : PayloadAction<User>) => {
             state.loading = false;
             state.data = action.payload;
         })
@@ -76,7 +76,7 @@ export const startSession = createAsyncThunk('session/startSession', async (user
     console.log(res)
     const token = await res.json();
     sessionStorage.setItem('jwtToken', token.accessToken);
-    return token;
+    return user;
     // return user object
 })
 

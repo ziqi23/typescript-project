@@ -1,10 +1,15 @@
-img {
-    height: 100vh;
-    width: 100vw;
+.homepage-main img {
     object-fit: cover;
-    opacity: 70%;
 }
 
-.homepage {
-    position: relative;
+.homepage-main {
+    height: 60vh;
+}
+
+.homepage-event-filters {
+    margin: 2rem;
+}
+
+.homepage-featured-events {
+    margin: 2rem;
 }

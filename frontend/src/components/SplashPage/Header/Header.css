@@ -14,8 +14,8 @@
 .homepage-header-left {
     display: flex;
     justify-content: center;
-    align-items: center;
-    width: 6%;
+    /* align-items: center; */
+    width: 20%;
     height: inherit;
 }
 .homepage-header-left a {
