@@ -3,19 +3,49 @@ import { add, remove } from '../../../store/selectedSection';
 import { getStadium } from "../../../store/stadium";
 import { useEffect, useRef, useState } from 'react';
 import { useAppSelector, useAppDispatch } from "../../../store/hooks";
+import { useParams } from 'react-router-dom';
 
-type Venue = {
-    url: string | undefined
-}
-function VenueMap(data : Venue) {
+
+function VenueMap() {
+    const dispatch = useAppDispatch();
+    const { id } = useParams<{id : string}>();
+    const events = useAppSelector(state => state.event.data);
+    const currentEvent = events ? events.filter(event => event._id === id)[0] : null;
+    const selectedSections = useAppSelector(state => state.selectedSection.data);
+
+    window.addEventListener('click', handleClick);
+
+    function handleClick(e : any) {
+        if (e.target.getAttribute('data-section')) {
+            let section : string = e.target.getAttribute('data-section')
+            if (!selectedSections.includes(section)) {
+                dispatch(add(section));
+            }
+            else {
+                dispatch(remove(section));
+            }
+        }
+    }
+
+    useEffect(() => {
+        document.querySelectorAll("[data-section]").forEach(section => {
+            let a = section.getAttribute("data-section")
+            if (a && selectedSections.includes(a)) { // if section has been selected, highlight in different color
+                section.setAttribute("fill", "blue");
+            }
+            else {
+                section.setAttribute("fill", "gray")
+            }
+        })
+    }, [selectedSections])
+
     const [zoom, setZoom] = useState(1);
     const mapElement = useRef<HTMLDivElement>(null);
-    const dispatch = useAppDispatch();
     const venueData = useAppSelector(state => state.stadium.data);
 
     useEffect(() => {
-        if (data.url) {
-            dispatch(getStadium(data.url));
+        if (currentEvent?.stadiumURL) {
+            dispatch(getStadium(currentEvent.stadiumURL));
         }
     }, [])
 
@@ -42,7 +72,7 @@ function VenueMap(data : Venue) {
                     {venueData.map(section => (
                         <>
                         <path data-section={section.id} data-selected="false" d={section.svg}></path>
-                        <text x={section.textX - 25} y={section.textY - 25} stroke='#000000'>{section.id}</text>
+                        <text x={section.textX} y={section.textY} stroke='#000000'>{section.id}</text>
                         </>
                     ))}
                 </svg>

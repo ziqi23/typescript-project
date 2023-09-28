@@ -1,6 +1,9 @@
 .event-page {
     overflow: hidden;
 }
+
 .event-main {
     display: flex;
+    position: absolute;
+    top: 68px;
 }
