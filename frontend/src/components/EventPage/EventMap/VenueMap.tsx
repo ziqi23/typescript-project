@@ -5,6 +5,14 @@ import { useEffect, useRef, useState } from 'react';
 import { useAppSelector, useAppDispatch } from "../../../store/hooks";
 import { useParams } from 'react-router-dom';
 
+type ParsedSection = {
+    id : string,
+    rows? : number[],
+    svg: string,
+    rating: number,
+    textX: number,
+    textY: number 
+}
 
 function VenueMap() {
     const dispatch = useAppDispatch();
@@ -42,6 +50,7 @@ function VenueMap() {
     const [zoom, setZoom] = useState(1);
     const mapElement = useRef<HTMLDivElement>(null);
     const venueData = useAppSelector(state => state.stadium.data);
+    const [hoveredSection, setHoveredSection] = useState<ParsedSection | null>(null);
 
     useEffect(() => {
         if (currentEvent?.stadiumURL) {
@@ -64,21 +73,34 @@ function VenueMap() {
 
     }, [mapElement.current])
 
+    function handleMouseOver(e : any) {
+        const sectionId = e.target.getAttribute('data-section');
+        const sectionData = venueData ? venueData.filter(section => section.id === sectionId)[0] : null;
+        setHoveredSection(sectionData);
+    }
+
     // Use section # data to also create tooltip of row x - y
     if (venueData) {
         return (
-            <div className="venue-map-container" ref={mapElement}>
+            <div className="venue-map-container relatvie" ref={mapElement}>
+                {hoveredSection && (
+                    <div className='absolute bg-black text-white'>
+                        Section {hoveredSection.id}, 
+                        Row {hoveredSection.rows ? hoveredSection.rows[0] : null}
+                        to {hoveredSection.rows ? hoveredSection.rows[hoveredSection.rows.length - 1] : null}
+                    </div>
+                )}
                 <svg className="venue-map" stroke="red" fill="grey" transform={`scale(${zoom} ${zoom})`}>
                     {venueData.map(section => (
                         <>
-                        <path data-section={section.id} data-selected="false" d={section.svg}></path>
-                        <text x={section.textX} y={section.textY} stroke='#000000'>{section.id}</text>
+                        <path transform="scale(0.5 0.5)" data-section={section.id} data-selected="false" d={section.svg} onMouseOver={handleMouseOver} onMouseLeave={() => setHoveredSection(null)}></path>
+                        {/* <text x={section.textX} y={section.textY} stroke='#000000'>{section.id}</text> */}
                         </>
                     ))}
                 </svg>
-                <button onClick={() => {setZoom(zoom * 1.1)}}>Zoom In</button>
-                <button onClick={() => {setZoom(1)}}>Reset</button>
-                <button onClick={() => {setZoom(zoom * 0.9)}}>Zoom Out</button>
+                <button className="absolute top-0 right-40" onClick={() => {setZoom(zoom * 1.1)}}>Zoom In</button>
+                <button className="absolute top-0 right-20" onClick={() => {setZoom(1)}}>Reset</button>
+                <button className="absolute top-0 right-0" onClick={() => {setZoom(zoom * 0.9)}}>Zoom Out</button>
             </div>
         )
     }

@@ -64,7 +64,7 @@ function TicketListingCard({id, eventId, section, price, row, quantity, descript
             <div>{description}</div>
         </div>
         {confirmationVisible && (
-            <div className="confirmation-panel">
+            <div className="confirmation-panel relative z-10">
                 <div onClick={() => setConfirmationVisible(false)}>X</div>
                 <div className="mini-venue-map-container">
                     <svg className="mini-venue-map" width="500" height="400" stroke="red" fill="grey">

@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useAppDispatch } from "../../store/hooks"
 import { startSession } from "../../store/session"
 import { useHistory } from 'react-router-dom'
+import Header from '../SplashPage/Header/Header'
 const Login = () => {
     const [credential, setCredential] = useState('')
     const [email, setEmail] = useState('')
@@ -30,14 +31,7 @@ const Login = () => {
 
     return (
         <>
-            <div className="homepage-header">
-                <div className="homepage-header-inner">
-                    <div className="homepage-nav-bar">
-                        <div className="homepage-icon" style={{marginLeft: '15px'}}>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Header />
             <div className="login-main">
                 <div className="login-field">
                     <h1>Log in</h1>

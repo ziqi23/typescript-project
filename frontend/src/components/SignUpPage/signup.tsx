@@ -3,6 +3,8 @@ import { useState } from "react"
 import { useAppDispatch } from "../../store/hooks"
 import { useHistory } from "react-router-dom"
 import { registerUser } from "../../store/session"
+import Header from "../SplashPage/Header/Header"
+import './signup.css'
 // import { useDispatch } from "react-redux"
 // import { login, signUpUser } from "../../store/session"
 // import { csrfFetch } from "../../store/csrf"
@@ -36,14 +38,7 @@ const Signup = () => {
 
     return (
         <>
-            <div className="homepage-header">
-                <div className="homepage-header-inner">
-                    <div className="homepage-nav-bar">
-                        <div className="homepage-icon" style={{marginLeft: '15px'}}>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Header />
             <div className="login-main">
                 <div className="login-field">
                     <h1>Sign up</h1>

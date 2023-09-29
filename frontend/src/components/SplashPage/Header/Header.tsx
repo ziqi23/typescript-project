@@ -1,8 +1,16 @@
 import { Link } from "react-router-dom";
 import logo from "../../../assets/ticket.png"
 import "./Header.css"
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { endSession } from "../../../store/session";
 
 function Header() {
+    const currentUser = useAppSelector(state => state.session.data);
+    const dispatch = useAppDispatch();
+    
+    function logout() {
+        dispatch(endSession());
+    }
 
     return (
         <nav className="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 left-0 border-b border-gray-200 dark:border-gray-600">
@@ -11,18 +19,29 @@ function Header() {
                     <img src={logo} className="w-8 h-8 mr-3"/>
                     <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Ticket Tracker</span>
                 </Link>
-                <div className="flex md:order-2">
-                    <Link to="/register">
-                        <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring focus:ring-white-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3">
-                            Sign up
+                {currentUser && (
+                    <div className="flex md:order-2">
+                        <button onClick={() => logout()} type="button" className="text-blue-700 bg-white hover:bg-slate-100 focus:ring focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center">
+                            Log out
                         </button>
-                    </Link>
-                    <Link to="/login">
-                        <button type="button" className="text-blue-700 bg-white hover:bg-slate-100 focus:ring focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center">
-                            Log in
-                        </button>
-                    </Link>
-                </div>
+                    </div>
+                )}
+                {!currentUser && (
+                    <>
+                        <div className="flex md:order-2">
+                            <Link to="/register">
+                                <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring focus:ring-white-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3">
+                                    Sign up
+                                </button>
+                            </Link>
+                            <Link to="/login">
+                                <button type="button" className="text-blue-700 bg-white hover:bg-slate-100 focus:ring focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center">
+                                    Log in
+                                </button>
+                            </Link>
+                        </div>
+                    </>
+                )}
                 <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
                     <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 bg-gray-900">
                         <li>

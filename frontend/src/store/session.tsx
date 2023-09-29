@@ -80,4 +80,5 @@ export const startSession = createAsyncThunk('session/startSession', async (user
     // return user object
 })
 
+export const { endSession } = sessionSlice.actions;
 export default sessionSlice.reducer;
