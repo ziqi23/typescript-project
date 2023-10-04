@@ -6,21 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import store from './store';
-import * as eventActions from './store/ticket';
-import * as stadiumActions from './store/stadium';
-
-// declare global {
-//   interface Window {
-//     store : any;
-//     eventActions : any;
-//     stadiumActions : any;
-//   }
-// }
-// if (process.env.NODE_ENV !== 'production') {
-//   window.store = store;
-//   window.eventActions = eventActions;
-//   window.stadiumActions = stadiumActions;
-// }
+import { validateCurrentUser } from './store/session';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -35,6 +21,8 @@ root.render(
   </React.StrictMode>
 );
 
+const token = localStorage.getItem('jwtToken');
+store.dispatch(validateCurrentUser(token));
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals

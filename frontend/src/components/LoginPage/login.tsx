@@ -6,27 +6,20 @@ import { useHistory } from 'react-router-dom'
 import Header from '../SplashPage/Header/Header'
 const Login = () => {
     const [credential, setCredential] = useState('')
-    const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [errors, setErrors] = useState([''])
+    const [errors, setErrors] = useState('')
     const dispatch = useAppDispatch();
     const history = useHistory();
 
     async function handleSubmit(e : any) {
         e.preventDefault()
         dispatch(startSession({credential, password}))
-            .then(() => history.push('/profile'))
-            .catch(async (res) => {
-                let data;
-                try {
-                    data = await res.clone().json()
-                } catch {
-                    data = await res.text()
-                }
-                if (data?.errors) setErrors(data.errors)
-                else if (data) setErrors([data])
-                else setErrors([res.statusText])
-            })
+        .then(() => {
+            history.push('/profile');
+        })
+        .catch((err) => {
+            setErrors('Invalid credentials');
+        })
     }
 
     return (
@@ -41,7 +34,7 @@ const Login = () => {
                         <label>Password</label>
                         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}></input>
                         <ul>
-                            {errors.map((error, idx) => <div key={idx} className="error-message">{error}</div>)}
+                            {errors}
                         </ul>
                         <input type="submit" id="login-submit" value="Continue with password"></input>
                     </form>

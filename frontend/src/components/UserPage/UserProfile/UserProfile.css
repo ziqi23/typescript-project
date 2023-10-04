@@ -1,0 +1,232 @@
+.profile-page-root {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+  
+  .profile-page-top {
+    display: flex;
+    flex-grow: 1;
+    gap: 30px;
+    box-sizing: border-box;
+    /* margin: 0 30px; */
+    /* padding: 0px 30px; */
+  }
+  
+  .profile-page-left {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    max-height: 461px;
+    padding-left: 20px;
+  }
+  
+  .profile-page-picture {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-width: 300px;
+    min-height: 300px;
+    object-fit: cover;
+    border-radius: 200px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+  }
+  
+  .profile-page-picture img:hover {
+    transition: 2s;
+    filter: blur(3px);
+  }
+  
+  .profile-page-upload-panel-toggle {
+    position: absolute;
+    top: 140px;
+    right: 95px;
+    color: rgb(228, 223, 223);
+    background-color: rgb(55, 53, 47, 0.8);
+    font-size: 14px;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    filter: none;
+  }
+  
+  .profile-page-upload-panel-toggle:hover {
+    background-color: rgb(55, 53, 47);
+    transition-duration: 200ms;
+    cursor: pointer;
+  }
+  
+  .profile-page-picture-file {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 200px;
+    background-color: white;
+  }
+  
+  .profile-page-user-details {
+    margin: 1vw;
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .profile-page-user-details h1 {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    font-size: 30px;
+    text-transform: capitalize;
+    text-align: center;
+  }
+  
+  .profile-page-user-details h2 {
+    display: flex;
+    align-items: center;
+    margin-top: 6px;
+    padding-left: 12px;
+    padding-right: 12px;
+    color: rgb(55, 53, 47, 0.5);
+    background-color: rgb(55, 53, 47, 0.08);
+    height: 20px;
+    border-radius: 5px;
+  }
+  
+  .profile-page-user-details h3 {
+    margin-top: 8px;
+  }
+  
+  .profile-page-right {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    width: 60vw;
+    box-sizing: border-box;
+    padding-right: 20px;
+  }
+  
+  .profile-page-right h1 {
+    font-size: 20px;
+  }
+  
+  .profile-page-right h2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .profile-page-right img {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .profile-picture-upload-panel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    box-sizing: border-box;
+    z-index: 10;
+    width: 500px;
+    height: 260px;
+    color: rgb(28, 28, 28);
+    background-color: rgb(249, 249, 249);
+    position: absolute;
+    top: 0px;
+    left: 250px;
+    border-radius: 4px;
+    transition-duration: 500ms;
+    box-shadow: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px,
+      rgba(15, 15, 15, 0.1) 0px 3px 6px, rgba(15, 15, 15, 0.2) 0px 9px 24px;
+  }
+  
+  #profile-picture-upload-form {
+    margin-top: 30px;
+    border-radius: 5px;
+    box-shadow: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px,
+      rgba(15, 15, 15, 0.1) 0px 3px 6px;
+  }
+  
+  .profile-picture-dropbox-icon {
+    width: 64px;
+    height: 64px;
+  }
+  
+  .drag-highlight {
+    background-color: rgb(66, 67, 66);
+    color: rgb(239, 236, 236);
+  }
+  
+  .profile-nav-bar {
+    display: flex;
+    gap: 30px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  
+  .profile-nav-bar h1 {
+    cursor: pointer;
+    transition: 0.2s ease all;
+    text-align: center;
+  }
+  
+  .profile-nav-bar h1:hover {
+    color: rgb(236, 177, 66);
+    transform: scale(1.05);
+  }
+  
+  .profile-nav-bar .active {
+    font-weight: 500;
+    color: rgb(236, 177, 66);
+  }
+  
+  .profile-page-right .tab-title {
+    font-size: 3em;
+    text-align: center;
+    letter-spacing: -3px;
+  }
+  @media (max-width: 920px) {
+    .profile-page-top {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .profile-page-right {
+      width: 95%;
+    }
+  
+    .profile-nav-bar {
+      justify-content: center;
+    }
+  
+    .profile-picture-upload-panel {
+      top: 0px;
+      left: -100px;
+    }
+  }
+  
+  @media (max-width: 920px) {
+    .profile-page-top {
+      /* margin-top: 120px; */
+      /* width: 100vw; */
+      padding: 0px 0px;
+    }
+  
+    .profile-nav-bar {
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      text-align: center;
+    }
+  
+    .profile-page-right {
+      padding-right: 0px;
+    }
+  
+  }
+  

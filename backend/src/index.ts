@@ -1,4 +1,3 @@
-// console.log('hi tsx')
 import express from 'express';
 import mongoose from 'mongoose';
 import userRouter from './router/userRouter';

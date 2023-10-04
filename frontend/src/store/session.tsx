@@ -13,8 +13,8 @@ type FullUser = {
 }
 interface SessionState {
     loading: boolean;
-    error: null | string;
-    data: User | null;
+    error: string | null;
+    data: string | null;
 }
 
 const initialState = {
@@ -28,7 +28,7 @@ export const sessionSlice = createSlice({
     initialState,
     reducers: {
         endSession: (state) => {
-            sessionStorage.removeItem('jwtToken');
+            localStorage.removeItem('jwtToken');
             state.data = null;
         }
     },
@@ -37,7 +37,7 @@ export const sessionSlice = createSlice({
         .addCase(startSession.pending, (state) => {
             state.loading = true;
         })
-        .addCase(startSession.fulfilled, (state, action : PayloadAction<User>) => {
+        .addCase(startSession.fulfilled, (state, action : PayloadAction<string>) => {
             state.loading = false;
             state.data = action.payload;
         })
@@ -45,39 +45,56 @@ export const sessionSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         })
+        .addCase(validateCurrentUser.fulfilled, (state, action : PayloadAction<string>) => {
+            state.loading = false;
+            state.data = action.payload;
+        })
     }
 })
 
 export const validateCurrentUser = createAsyncThunk('session/validateUser', async (token : String | null) => {
-    console.log(1)
+    console.log(token)
     const res = await fetch('api/users/currentUser', {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({token})
     });
-    const data = await res.json();
-    return data;
+    if (!res.ok) {
+        throw new Error("Not logged in");
+    }
+    else {
+        const { user } = await res.json();
+        return user.user.id;
+    }
 })
+
 export const registerUser = createAsyncThunk('session/registerUser', async (user : FullUser) => {
     const res = await fetch('api/users/register', {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(user)
-    });
+    })
+    if (!res.ok) {
+        const text = await res.text()
+        throw new Error(text);
+    }
 })
 
 export const startSession = createAsyncThunk('session/startSession', async (user : User) => {
-    console.log(JSON.stringify(user))
     const res = await fetch('/api/users/login', {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(user)
     });
-    console.log(res)
-    const token = await res.json();
-    sessionStorage.setItem('jwtToken', token.accessToken);
-    return user;
-    // return user object
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text);
+    }
+    else {
+        const {user, token} = await res.json();
+        localStorage.setItem('jwtToken', token);
+        return user;
+    }
 })
 
 export const { endSession } = sessionSlice.actions;

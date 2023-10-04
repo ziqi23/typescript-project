@@ -2,15 +2,15 @@ import express from 'express';
 import { UserModel } from '../db/users';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken';
+const validateRegisterInput = require("./../validations/register");
+const validateLoginInput = require("./../validations/login");
 
 const router = express.Router();
 
-router.post('/login', async (req, res) => {
-    console.log("body is", req.body)
+router.post('/login', validateLoginInput, async (req, res) => {
     const {credential, password} = req.body;
     if (!credential || !password) {
-        res.status(400);
-        throw new Error("All fields are mandatory");
+        return res.status(400).send("Missing fields");
     }
     const user = await UserModel.findOne({email: credential}) || await UserModel.findOne({username: credential});
     if (user && (await bcrypt.compare(password, user.passwordHash))) {
@@ -24,30 +24,39 @@ router.post('/login', async (req, res) => {
             },
             process.env.ACCESS_TOKEN_SECRET
         )
-        res.status(200).json({accessToken})
+        res.status(200).json({user: user._id, token: accessToken})
     }
     else {
-        res.status(401);
-        throw new Error("Email or password is not valid");
+        return res.status(400).send("Email or password is not valid");
     }
 })
 
-router.post('/currentUser', async (req, res) => {
+router.post('/currentUser', async (req, res, next) => {
     const {token} = req.body;
     if (!token) {
-        throw new Error("No valid token");
+        return res.status(400).send("Not logged in");
     }
     const user = jwt.decode(token);
-    res.send({user})
+    if (!user) {
+        return res.status(400).send("Not logged in");
+    }
+    res.status(200).send({user})
 })
 
-router.post('/register', async (req, res) => {
+router.post('/register', validateRegisterInput, async (req, res, next) => {
     const {username, email, password} = req.body;
+    let errors = [];
     if (!username || !email || !password) {
-        throw new Error("Missing fields");
+        errors.push("Missing fields");
     }
     if (await UserModel.findOne({email})) {
-        throw new Error("Email already taken")
+        errors.push("Email already taken");
+    }
+    if (await UserModel.findOne({username})) {
+        errors.push("Username already taken");
+    }
+    if (errors.length) {
+        return res.status(400).send(errors);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
