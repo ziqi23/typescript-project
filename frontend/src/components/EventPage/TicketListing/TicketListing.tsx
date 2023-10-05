@@ -4,6 +4,7 @@ import { getTicket } from "../../../store/ticket";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
+import PricingGraph from './PricingGraph';
 
 type ParsedTicket = {
     id: string,
@@ -103,6 +104,7 @@ function TicketListing() {
 
     return (
         <div className='ticket-listing-container relative z-10'>
+            <PricingGraph />
             <div className="sticky top-0 filters mt-5 mx-3 bg-gray-100">
                 <button type="button" onClick={() => setPricePanelVisible(!pricePanelVisible)} className="bg-transparent text-black font-semibold border border-gray-500 hover:border-black rounded-full py-2 px-4 mr-3">Price</button>
                 <button type="button" onClick={() => setQuantityPanelVisible(!quantityPanelVisible)} className="bg-transparent text-black font-semibold border border-gray-500 hover:border-black rounded-full py-2 px-4 mr-3">Quantity</button>

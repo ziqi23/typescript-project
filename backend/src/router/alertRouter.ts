@@ -15,38 +15,35 @@ router.get('/:id', async (req, res) => {
     }
 })
 
-type Alert = {
+type Alert = {            
     userId: String,
     eventId: String,
-    desiredSections: String,
+    desiredSections: string[]
     desiredPrice: String
 }
 
 router.post('/', async (req, res) => {
     const {userId, eventId, desiredSections, desiredPrice} : Alert = req.body;
     if (!userId || !eventId || !desiredSections || !desiredPrice) {
-        throw new Error("Missing fields");
+        res.status(400).send("Missing fields");
     }
-    const formattedDesiredSections : Number[] = desiredSections.split(" ").map(ele => parseInt(ele))
+    console.log(desiredSections)
+    const formattedDesiredSections : Number[] = desiredSections.map(ele => parseInt(ele))
     const time = Date.now();
-    const eventTime = Date.now(); // TO UPDATE: Event name, event picture
-    const eventURL = eventId;
 
     const alert = await AlertModel.create({
         userId,
+        eventId,
         time,
-        eventURL,
-        eventTime,
         desiredPrice,
         desiredSections: formattedDesiredSections,
-        priceHistory: "1"
+        priceHistory: 1
     })
     if (alert) {
         res.status(200).json(null);
     }
     else {
-        res.status(400);
-        throw new Error("Alert data is not valid");
+        res.status(400).send("Alert data is not valid");
     }
 })
 

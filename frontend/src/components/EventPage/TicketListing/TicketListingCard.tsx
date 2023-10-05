@@ -60,7 +60,7 @@ function TicketListingCard({id, eventId, section, price, row, quantity, descript
             <div>{description}</div>
         </div>
         {confirmationVisible && (
-            <Alert {...{id, eventId, section, price, row, quantity, description}}/>
+            <Alert {...{id, eventURLId:eventId, section, price, row, quantity, description, setVisible: setConfirmationVisible}}/>
         )}
         </>
     );

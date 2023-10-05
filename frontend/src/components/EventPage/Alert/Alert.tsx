@@ -1,28 +1,53 @@
-import { useState } from 'react';
-import { useAppSelector } from '../../../store/hooks';
+import { ChangeEvent, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import './Alert.css';
+import { useParams } from 'react-router-dom';
 
-type ParsedTicket = {
+type AlertProps = {
     id: string,
-    eventId: string,
+    eventURLId: string,
     section: string,
     row: string,
     price: number,
     quantity: number,
-    description: string
+    description: string,
+    setVisible: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function Alert({id, eventId, section, price, row, quantity, description} : ParsedTicket) {
+function Alert({id, eventURLId, section, row, price, quantity, description, setVisible} : AlertProps) {
     const venueData = useAppSelector(state => state.stadium.data);
+    const dispatch = useAppDispatch();
+    const userId = useAppSelector(state => state.session.data);
     const [alertVisible, setAlertVisible] = useState(false);
+    const [thresholdPrice, setThresholdPrice] = useState(0);
+    const event = useParams<{id: string | undefined}>()
+    const eventId = event.id;
 
     function generateLink() {
-        return `https://www.tickpick.com/checkout?listingId=${id}&quantity=${quantity}&listingType=TP&price=${price}&e=${eventId}&s=${section}`
+        return `https://www.tickpick.com/checkout?listingId=${id}&quantity=${quantity}&listingType=TP&price=${price}&e=${eventURLId}&s=${section}`
+    }
+
+    function handleSetAlert() {
+        console.log(thresholdPrice)
+        console.log(section)
+        console.log(userId)
+        console.log(eventId)
+        const body = {
+            userId,
+            eventId,
+            desiredPrice: thresholdPrice,
+            desiredSections: [section]
+        }
+        fetch('/api/alerts', {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(body)
+        })
     }
 
     return (
         <div className="confirmation-panel relative z-10">
-                {/* <div onClick={() => setConfirmationVisible(false)}>X</div> */}
+                <div onClick={() => setVisible(false)}>X</div>
                 <div className="mini-venue-map-container">
                     <svg className="mini-venue-map" width="500" height="400" stroke="red" fill="grey">
                         {venueData?.map(section => (
@@ -47,7 +72,8 @@ function Alert({id, eventId, section, price, row, quantity, description} : Parse
                     {alertVisible && (
                         <>
                         <div>Your Section: Section {section}</div>
-                        <div>Your Price: <input></input></div>
+                        <div>Your Price: <input onChange={(e : any) => setThresholdPrice(e.target.value)}></input></div>
+                        <button onClick={handleSetAlert}>Confirm</button>
                         </>
                     )}
                 </div>

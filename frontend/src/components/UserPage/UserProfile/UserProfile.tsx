@@ -6,28 +6,35 @@ import { validateCurrentUser } from '../../../store/session';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { AiOutlineDownload } from 'react-icons/ai';
 import { useHistory } from 'react-router-dom';
+import AlertCard from '../Alerts/AlertCard';
+
+type Alert = {
+    _id: string,
+    userId: string,
+    eventId: string,
+    time: string,
+    desiredPrice: number,
+    desiredSections: number[],
+    notified: boolean,
+    priceHistory: string
+}
 
 function UserProfile() {
     const [photoFile, setPhotoFile] = useState<File | null>(null);
     const [updatePhoto, setUpdatePhoto] = useState(false);
     const [uploadPanelOpen, setUploadPanelOpen] = useState(false);
+    const [userAlerts, setUserAlerts] = useState<Alert[]>([]);
     const user = useAppSelector(state => state.session.data);
     const dispatch = useAppDispatch();
     const history = useHistory();
-    // const getAlerts = async () => {
-    //     // const res = await fetch(`/api/alerts/${1}`);
-    //     const data = await res.json();
-    //     console.log(data);
-    // }
-
-    // useEffect(() => {
-    //     getAlerts();
-    // })
-    // useEffect(() => {
-    //     const token = localStorage.getItem('jwtToken')
-    //     console.log(token)
-    //     dispatch(validateCurrentUser(token)).unwrap().catch(err => history.push('/'));
-    // }, [])
+    useEffect(() => {
+        async function fetchAlerts() {
+            const res = await fetch(`/api/alerts/${user}`);
+            const json = await res.json();
+            setUserAlerts(json.userAlerts);
+        }
+        fetchAlerts();
+    }, [])
 
     async function handlePanelClick(e : any) {
         e.preventDefault();
@@ -128,6 +135,9 @@ function UserProfile() {
                 <div className='user-profile-right'>
                     Alert 1 - Set up time, event details, price history, threshold price & sections
                     Notified / Not yet
+                    {userAlerts?.map(alert => (
+                        <AlertCard {...alert}/>
+                    ))}
                 </div>
             </div>
         </>
