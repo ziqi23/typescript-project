@@ -69,8 +69,7 @@ router.post('/register', validateRegisterInput, async (req, res, next) => {
         res.status(200).json({_id: user._id, email: user.email});
     }
     else {
-        res.status(400);
-        throw new Error("User data is not valid");
+        res.status(400).send("User data is not valid");
     }
 })
 

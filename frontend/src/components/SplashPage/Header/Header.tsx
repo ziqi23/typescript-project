@@ -21,6 +21,11 @@ function Header() {
                 </Link>
                 {currentUser && (
                     <div className="flex md:order-2">
+                        <Link to="/profile">
+                            <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring focus:ring-white-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3">
+                                Profile
+                            </button>
+                        </Link>
                         <button onClick={() => logout()} type="button" className="text-blue-700 bg-white hover:bg-slate-100 focus:ring focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center">
                             Log out
                         </button>
