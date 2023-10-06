@@ -102,9 +102,11 @@ function TicketListing() {
         setQuantity(parseInt(e.target.innerHTML));
     }
 
+    console.log(minPrice, maxPrice)
+
     return (
         <div className='ticket-listing-container relative z-10'>
-            <PricingGraph />
+            <PricingGraph minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice}/>
             <div className="sticky top-0 filters mt-5 mx-3 bg-gray-100">
                 <button type="button" onClick={() => setPricePanelVisible(!pricePanelVisible)} className="bg-transparent text-black font-semibold border border-gray-500 hover:border-black rounded-full py-2 px-4 mr-3">Price</button>
                 <button type="button" onClick={() => setQuantityPanelVisible(!quantityPanelVisible)} className="bg-transparent text-black font-semibold border border-gray-500 hover:border-black rounded-full py-2 px-4 mr-3">Quantity</button>
