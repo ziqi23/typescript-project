@@ -79,27 +79,8 @@ function PricingGraph({minPrice, maxPrice, setMinPrice, setMaxPrice} : GraphProp
     // Scale x-axis and y-axis to width and height of container
     const xScale = d3.scaleLinear().domain([0, 20]).range([0, width]);
     const yScale = d3.scaleLinear().domain([0, maxFrequency]).range([height, 0]);
-    
-    svg.append("g")
-    .attr("transform", "translate(50," + height + ")")
-    .call(d3.axisBottom(xScale));
-    
-    svg.append("g")
-    .attr("transform", "translate(50, 0)")
-    .call(d3.axisLeft(yScale));
 
-    svg.append('g')
-    .selectAll("dot")
-    .data(dataset)
-    .enter()
-    .append("circle")
-    .attr("cx", function (d) { return xScale(d["x"]); } )
-    .attr("cy", function (d) { return yScale(d["y"]); } )
-    .attr("r", 2)
-    .attr("transform", "translate(50, 0)")
-    .style("fill", "#CC0000");
-
-    var line = d3.line<Data>()
+    const line = d3.line<Data>()
         .x(function(d) { return xScale(d["x"]); }) 
         .y(function(d) { return yScale(d["y"]); }) 
         .curve(d3.curveBasis)
@@ -110,8 +91,11 @@ function PricingGraph({minPrice, maxPrice, setMinPrice, setMaxPrice} : GraphProp
         .attr("transform", "translate(50, 0)")
         .attr("d", line)
         .style("fill", "url(#solids")
+        // .style("fill", "url(#solids2)")
         // .style("stroke", "#CC0000")
         .style("stroke-width", "1");
+    
+    
 
     // On drag event, update the tickets displayed, arrow position on page, min/max price, and eventually event map availability
     function handleDrag(e : any) {
@@ -145,6 +129,10 @@ function PricingGraph({minPrice, maxPrice, setMinPrice, setMaxPrice} : GraphProp
                 <stop offset={`${leftOffset}%`} style={{stopColor: "rgb(62, 62, 115)", stopOpacity: "1"}} />
                 <stop offset={`${rightOffset || 100}%`} style={{stopColor: "rgb(62, 62, 115)", stopOpacity: "1"}} />
                 <stop offset={`${rightOffset || 100}%`} style={{stopColor: "rgb(103, 103, 150)", stopOpacity: "1"}} />
+                <stop offset="100%" style={{stopColor: "rgb(103, 103, 150)", stopOpacity: "1"}} />
+                </linearGradient>
+                <linearGradient id="solids2" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style={{stopColor: "rgb(0, 0, 150)", stopOpacity: "1"}} />
                 <stop offset="100%" style={{stopColor: "rgb(103, 103, 150)", stopOpacity: "1"}} />
                 </linearGradient>
             </defs>

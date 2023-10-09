@@ -59,14 +59,27 @@ export const getStadium = createAsyncThunk('stadium/fetchStadium', async (venueU
     // also need row x thru y;
     // personal twist to data: 1) split into halves 
     data.sections.forEach((section : Section) => {
+        let coords = section.svg_path.split(/[,\s]/).filter((ele) => !isNaN(parseInt(ele)));
+        let minX = parseInt(coords[0]), maxX = parseInt(coords[0]);
+        let minY = parseInt(coords[1]), maxY = parseInt(coords[1]);
+        for (let i = 0; i < coords.length; i++) {
+            if (i % 2) {
+                minY = Math.min(minY, parseInt(coords[i]));
+                maxY = Math.max(maxY, parseInt(coords[i]));
+            }
+            else {
+                minX = Math.min(minX, parseInt(coords[i]));
+                maxX = Math.max(maxX, parseInt(coords[i]));
+            }
+        }
         let formattedRows = section.rows ? section.rows.map(ele => parseInt(ele)) : [];
         parsedStadiumData.push({ 
             id: section.id, 
             svg: section.svg_path, 
             rating: section.star_rating, 
             rows: formattedRows,
-            textX: (section.minX + section.maxX) / 2,
-            textY: (section.minY + section.maxY) / 2 
+            textX: (minX + maxX) / 2,
+            textY: (minY + maxY) / 2 
         })
     })
     return parsedStadiumData;

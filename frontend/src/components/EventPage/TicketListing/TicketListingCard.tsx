@@ -42,9 +42,9 @@ function TicketListingCard({id, eventId, section, price, row, quantity, descript
         if (selectedSections.includes(section)) {
             mouseHoverSection?.setAttribute('fill', 'blue');
         }
-        else {
-            mouseHoverSection?.setAttribute('fill', 'gray');
-        }
+        // else {
+        //     mouseHoverSection?.setAttribute('fill', 'gray');
+        // }
     }
 
     return (
