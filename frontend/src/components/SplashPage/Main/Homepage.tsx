@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getEvents } from "../../../store/event";
 import { useEffect, useState } from "react";
 import Footer from "../Footer/footer";
+import { reset } from "../../../store/selectedSection";
 
 function Homepage() {
     const dispatch = useAppDispatch();
@@ -18,6 +19,7 @@ function Homepage() {
     
     useEffect(() => {
         dispatch(getEvents()); // Fetch all events from database
+        dispatch(reset());
     }, [])
     
     function handleFilter(e : any) { // Locally filter all events for specific criteria to display

@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
 import PricingGraph from './PricingGraph';
+import { GiSettingsKnobs } from 'react-icons/gi'
 
 type ParsedTicket = {
     id: string,
@@ -33,6 +34,7 @@ function TicketListing() {
     const [quantity, setQuantity] = useState(1);
     const [pricePanelVisible, setPricePanelVisible] = useState(false);
     const [quantityPanelVisible, setQuantityPanelVisible] = useState(false);
+    const [filterPanelVisible, setFilterPanelVisible] = useState(false);
 
     // Fetch ticket data upon mounting
     useEffect(() => {
@@ -63,7 +65,6 @@ function TicketListing() {
 
         // Handle quantity filter
         ticketsToDisplay = ticketsToDisplay.filter(ticket => {
-            console.log(ticket.quantity, quantity, ticket.quantity >= quantity)
             return ticket.quantity >= quantity
         });
 
@@ -102,16 +103,21 @@ function TicketListing() {
         setQuantity(parseInt(e.target.innerHTML));
     }
 
-    console.log(minPrice, maxPrice)
-
     return (
-        <div className='ticket-listing-container relative z-10'>
-            <PricingGraph minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice}/>
-            <div className="sticky top-0 filters mt-5 mx-3 bg-gray-100">
+        <div className="ticket-listing-container relative z-10">
+            <div className="mt-5 p-5">
+                <p className="text-xl font-bold">{currentEvent?.eventTitle}</p>
+                <p className="mt-2 text-base">{currentEvent?.eventTime} · {currentEvent?.eventLocation}</p>
+            </div>
+            <div className="filters" onClick={() => setFilterPanelVisible(!filterPanelVisible)}>
+                <div className="pointer bg-transparent text-black font-semibold border border-gray-500 hover:border-black rounded-full py-2 px-4 mr-3"><GiSettingsKnobs className='filter-logo'/></div>
                 <button type="button" onClick={() => setPricePanelVisible(!pricePanelVisible)} className="bg-transparent text-black font-semibold border border-gray-500 hover:border-black rounded-full py-2 px-4 mr-3">Price</button>
                 <button type="button" onClick={() => setQuantityPanelVisible(!quantityPanelVisible)} className="bg-transparent text-black font-semibold border border-gray-500 hover:border-black rounded-full py-2 px-4 mr-3">Quantity</button>
                 <button type="button" onClick={e => handleSortTickets(e)} className="bg-transparent text-black font-semibold border border-gray-500 hover:border-black rounded-full py-2 px-4 mr-3">Lowest Price First</button>
             </div>
+            {filterPanelVisible && (
+                <PricingGraph minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice} setFilterPanelVisible={setFilterPanelVisible}/>
+            )}
             {pricePanelVisible && (
                 <div className='flex bg-gray-100 items-center'>
                     <div className='rounded-full py-2 px-4'>
@@ -132,7 +138,7 @@ function TicketListing() {
                     </div>
                 </div>
             )}
-            <div className='relative z-30'>
+            <div className='z-30'>
                 {displayedTickets?.map(ticket => (
                     <TicketListingCard {...ticket}/>
                 ))}

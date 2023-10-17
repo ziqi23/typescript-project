@@ -1,10 +1,24 @@
 .ticket-listing-container {
+    min-width: 600px;
     width: 600px;
-    height: 80vh;
+    height: 100%;
+    overflow-y: scroll;
 }
 
 .user-price-input {
     width: 50px;
     border-radius: 4px 2px;
     border: 1px solid black;
+}
+
+.filters {
+    display: flex;
+    align-items: center;
+}
+
+.filter-logo {
+    width: 20px;
+    height: 20px;
+    margin-right: 1rem;
+    margin-left: 1rem;
 }

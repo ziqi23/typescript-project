@@ -34,13 +34,3 @@
     font-weight: bold;
 }
 
-.confirmation-panel {
-    position: absolute;
-    z-index: 30;
-    top: 200px;
-    left: 500px;
-    width: 500px;
-    height: 800px;
-    background-color: aliceblue;
-    border: 1px solid black;
-}

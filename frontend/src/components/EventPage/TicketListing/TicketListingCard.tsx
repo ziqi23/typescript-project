@@ -34,17 +34,13 @@ function TicketListingCard({id, eventId, section, price, row, quantity, descript
 
     function handleMouseEnter() {
         const mouseHoverSection = document.querySelector(`[data-section="${section}"]`);
-        mouseHoverSection?.setAttribute('fill', 'green');
+        mouseHoverSection?.setAttribute('stroke', 'black');
     }
 
     function handleMouseLeave() {
         const mouseHoverSection = document.querySelector(`[data-section="${section}"]`);
-        if (selectedSections.includes(section)) {
-            mouseHoverSection?.setAttribute('fill', 'blue');
-        }
-        // else {
-        //     mouseHoverSection?.setAttribute('fill', 'gray');
-        // }
+        mouseHoverSection?.removeAttribute('stroke');
+        
     }
 
     return (
@@ -57,7 +53,7 @@ function TicketListingCard({id, eventId, section, price, row, quantity, descript
             <div className='ticket-location'>
                 <p>Section {section}, </p><p>Row {row}</p>
             </div>
-            <div>{description}</div>
+            <div>{description.slice(0, 100)}...</div>
         </div>
         {confirmationVisible && (
             <Alert {...{id, eventURLId:eventId, section, price, row, quantity, description, setVisible: setConfirmationVisible}}/>

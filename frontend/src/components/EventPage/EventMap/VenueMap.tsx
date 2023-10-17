@@ -29,21 +29,26 @@ function VenueMap() {
     const [hoveredSection, setHoveredSection] = useState<ParsedSection | null>(null);
     const [offsetX, setOffsetX] = useState(0);
     const [offsetY, setOffsetY] = useState(0);
-    // const [initialX, setInitialX] = useState(0);
-    // const [initialY, setInitialY] = useState(0);
+    const [initialX, setInitialX] = useState(0);
+    const [initialY, setInitialY] = useState(0);
     const [scale, setScale] = useState(1);
 
     // handle drag
-    let initialX = 0, initialY = 0;
-    function handleMouseDown(e : any) {
-        initialX = e.clientX;
-        initialY = e.clientY;
-        if (e.target.getAttribute('listener') !== 'true') {
-            e.currentTarget.addEventListener('mousemove', handleMouseMove);
-            e.currentTarget.setAttribute('listener', 'true');
-        }
-        console.log("down", initialX, initialY)
+    async function handleMouseDown(e : any) {
+        setInitialX(e.clientX);
+        setInitialY(e.clientY);
+        // if (e.target.getAttribute('listener') !== 'true') {
+        //     e.currentTarget.addEventListener('mousemove', handleMouseMove);
+        //     e.currentTarget.setAttribute('listener', 'true');
+        // }
+        // console.log("down", initialX, initialY)
     }
+
+    useEffect(() => {
+        if (initialX || initialY) {
+            window.addEventListener('mousemove', handleMouseMove);
+        }
+    }, [initialX, initialY])
 
     const handleMouseMove = useCallback((e : any) => {
         console.log("move", e, initialX, initialY)
@@ -52,9 +57,9 @@ function VenueMap() {
     },[]);
 
     function handleMouseUp(e : any) {
-        console.log("up", e.currentTarget)
-        e.currentTarget.removeEventListener('mousemove', handleMouseMove);
-        e.currentTarget.setAttribute('listener', 'false');
+        // console.log("up", e.currentTarget)
+        window.removeEventListener('mousemove', handleMouseMove);
+        // e.currentTarget.setAttribute('listener', 'false');
     }
     // add color based on availability
 
@@ -77,17 +82,21 @@ function VenueMap() {
         if (rect) {
             const width = rect.width;
             const height = rect.height;
-            setScale(Math.min(height / maxY - 0.2, width / maxX - 0.2));
+            setScale(Math.min(height / maxY - 0.1, width / maxX - 0.1));
         }
         // find min and max coords, compare to bounding box and calculate scaling variable.
     }
+
+    useEffect(() => {
+        handleResize();
+    }, [])
 
     window.addEventListener('click', handleClick);
 
     function handleClick(e : any) {
         if (e.target.getAttribute('data-section')) {
             let section : string = e.target.getAttribute('data-section')
-            if (!selectedSections.includes(section)) {
+            if (!selectedSections.includes(section) && tickets?.some(ticket => ticket.section === section)) {
                 dispatch(add(section));
             }
             else {
@@ -99,12 +108,14 @@ function VenueMap() {
     useEffect(() => {
         document.querySelectorAll("[data-section]").forEach(section => {
             let a = section.getAttribute("data-section")
-            if (a && selectedSections.includes(a)) { // if section has been selected, highlight in different color
-                section.setAttribute("fill", "blue");
+            if (tickets?.some(ticket => ticket.section === a)) {
+                if (a && selectedSections.includes(a)) { // if section has been selected, highlight in different color
+                    section.setAttribute("fill", "rgb(109, 193, 109)");
+                }
+                else {
+                    section.setAttribute("fill", "rgb(185, 212, 185)");
+                } 
             }
-            // else {
-            //     section.setAttribute("fill", "gray")
-            // }
         })
     }, [selectedSections])
 
@@ -142,7 +153,7 @@ function VenueMap() {
         return (
             <div className="venue-map-container relative" ref={mapElement}>
                 {hoveredSection && (
-                    <div className='absolute bg-black text-white'>
+                    <div className='absolute bg-black text-white top-5'>
                         Section {hoveredSection.id}, 
                         Row {hoveredSection.rows ? hoveredSection.rows[0] : null}
                         to {hoveredSection.rows ? hoveredSection.rows[hoveredSection.rows.length - 1] : null}
@@ -153,7 +164,7 @@ function VenueMap() {
                         if (tickets?.some(ticket => ticket.section === section.id)) {
                             return (
                                 <>
-                                <path transform={`translate(${offsetX}, ${offsetY}) scale(${scale} ${scale})`} fill="green" data-section={section.id} data-selected="false" d={section.svg} onMouseOver={handleMouseOver} onMouseLeave={() => setHoveredSection(null)}></path>
+                                <path transform={`translate(${offsetX}, ${offsetY}) scale(${scale} ${scale})`} fill="rgb(185, 212, 185)" data-section={section.id} data-selected="false" d={section.svg} onMouseOver={handleMouseOver} onMouseLeave={() => setHoveredSection(null)}></path>
                                 <text transform={`translate(${offsetX}, ${offsetY}) scale(${scale} ${scale})`} pointerEvents="none" x={section.textX - 10} y={section.textY} stroke='#000000'>{section.id}</text>
                                 </>
                             )

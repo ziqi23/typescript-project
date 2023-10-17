@@ -29,10 +29,13 @@ export const selectedSectionSlice = createSlice({
                 let index = state.data.indexOf(action.payload)
                 state.data = state.data.slice(0, index).concat(state.data.slice(index + 1))
             }
+        },
+        reset: (state) => {
+            state.data = [];
         }
     }
 })
 
-export const { add, remove } = selectedSectionSlice.actions;
+export const { add, remove, reset } = selectedSectionSlice.actions;
 
 export default selectedSectionSlice.reducer

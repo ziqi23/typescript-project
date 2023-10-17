@@ -1,0 +1,32 @@
+.confirmation-panel {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    /* top: 68px; */
+    top: 0px;
+    left: -600px;
+    min-width: 600px;
+    width: 600px;
+    height: 100%;
+    z-index: 30;
+    background-color: white;
+    border: 1px solid black;
+    transition: left 1s;
+    animation: 0.25s 1 forwards slidein;
+}
+
+@keyframes slidein {
+    100% {left: 0; }
+}
+
+@keyframes slideout {
+    from {left: 0px; }
+    to {left: -600px; }
+}
+
+.mini-venue-map-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

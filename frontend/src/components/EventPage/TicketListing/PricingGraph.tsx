@@ -13,27 +13,37 @@ type GraphProps = {
     minPrice: number,
     maxPrice: number,
     setMinPrice: React.Dispatch<React.SetStateAction<number>>,
-    setMaxPrice: React.Dispatch<React.SetStateAction<number>>
+    setMaxPrice: React.Dispatch<React.SetStateAction<number>>,
+    setFilterPanelVisible: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function PricingGraph({minPrice, maxPrice, setMinPrice, setMaxPrice} : GraphProps) {
+function PricingGraph({minPrice, maxPrice, setMinPrice, setMaxPrice, setFilterPanelVisible} : GraphProps) {
     const ticketData = useAppSelector(state => state.ticket.data); // Pull ticket data from store
+    const selectedSections = useAppSelector(state => state.selectedSection.data); // Pull selected sections from store
     const [leftOffset, setLeftOffset] = useState(0); // Set left offset location on page
     const [rightOffset, setRightOffset] = useState(0); // Set right offset location on page
     const [ticketPriceRange, setTicketPriceRange] = useState([0, 0]); // Track ticket price range
     const [averageTicketPrice, setAverageTicketPrice] = useState(0); // Track ticket average price
+    const [totalQuantity, setTotalQuantity] = useState(0); // Track total number of tickets
     const [maxFrequency, setMaxFrequency] = useState(0); // Track ticket max frequency (for y-axis scaling)
     const [dataset, setDataset] = useState<Data[]>([]) // Track formatted ticket data for input into line graph
 
     useEffect(() => {
-        if (ticketData) {
+        let filteredTicketData;
+        if (selectedSections.length) {
+            filteredTicketData = ticketData?.filter(ticket => selectedSections.includes(ticket.section));
+        }
+        else {
+            filteredTicketData = ticketData;
+        }
+        if (filteredTicketData) {
             // Track local min and max price while iterating through tickets to find global min and max
-            let minPrice = ticketData[0].price;
-            let maxPrice = ticketData[0].price;
+            let minPrice = filteredTicketData[0].price;
+            let maxPrice = filteredTicketData[0].price;
             // Track total price and quantity of all tickets to calculate average price to display
             let totalPrice = 0;
             let totalQuantity = 0;
-            for (let data of ticketData) {
+            for (let data of filteredTicketData) {
                 if (data.price > maxPrice) {
                     maxPrice = data.price;
                 }
@@ -46,12 +56,13 @@ function PricingGraph({minPrice, maxPrice, setMinPrice, setMaxPrice} : GraphProp
             setTicketPriceRange([minPrice, maxPrice]);
             setMinPrice(minPrice);
             setMaxPrice(maxPrice);
+            setTotalQuantity(totalQuantity);
             setAverageTicketPrice(Math.ceil(totalPrice / totalQuantity));
 
             // Create map to store {price: frequency} pairs for input into D3
             let prices = new Map<any, any>();       
             let maxFrequency = 0;
-            for (let data of ticketData) {
+            for (let data of filteredTicketData) {
                 // Categorize ticket prices into 20 sections (e.g. 0-5% lowest, 5-10% lowest, etc.)
                 let price = Math.ceil(data.price / maxPrice * 20);
                 // Track frequency for each price range as well as max frequency to scale y-axis appropriately
@@ -69,12 +80,12 @@ function PricingGraph({minPrice, maxPrice, setMinPrice, setMaxPrice} : GraphProp
             dataset.push({x: 20, y: 0})
             setDataset(dataset);
         }
-    }, [ticketData])
+    }, [ticketData, selectedSections])
 
     // Create D3 line graph
     const svg = d3.select("#svg");
     const width = 450;
-    const height = 350;
+    const height = 200;
 
     // Scale x-axis and y-axis to width and height of container
     const xScale = d3.scaleLinear().domain([0, 20]).range([0, width]);
@@ -115,33 +126,63 @@ function PricingGraph({minPrice, maxPrice, setMinPrice, setMaxPrice} : GraphProp
         }
     }
 
+    useEffect(() => {
+        let filteredTicketData;
+        if (selectedSections.length) {
+            filteredTicketData = ticketData?.filter(ticket => selectedSections.includes(ticket.section));
+        }
+        else {
+            filteredTicketData = ticketData;
+        }
+        if (filteredTicketData) {
+            setTotalQuantity(filteredTicketData.filter(ticket => ticket.price >= minPrice && ticket.price <= maxPrice).length)
+        }
+        document.querySelectorAll("[data-section]").forEach(section => {
+            let data = section.getAttribute("data-section");
+            console.log(ticketData)
+            if (!ticketData?.some(ticket => ticket.section === data && ticket.price >= minPrice && ticket.price <= maxPrice)) {
+                section.setAttribute("fill", "gray");
+            }
+            else {
+                section.setAttribute("fill", "rgb(185, 212, 185)");
+            }
+        })
+    }, [minPrice, maxPrice])
+
     return (
         <>
-        <div>
-            ${minPrice} - ${maxPrice}
-            Average Price : ${averageTicketPrice}
+        <div className="p-5">
+            <p>Price per ticket</p>
+            <p className='font-bold'>${minPrice} - ${maxPrice}</p>
+            <p>Average Price ${averageTicketPrice}</p>
         </div>
-        <svg id="svg" width="500" height="400">
-              <defs>
-                <linearGradient id="solids" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" style={{stopColor: "rgb(103, 103, 150)", stopOpacity: "1"}} />
-                <stop offset={`${leftOffset}%`} style={{stopColor: "rgb(103, 103, 150)", stopOpacity: "1"}} />
-                <stop offset={`${leftOffset}%`} style={{stopColor: "rgb(62, 62, 115)", stopOpacity: "1"}} />
-                <stop offset={`${rightOffset || 100}%`} style={{stopColor: "rgb(62, 62, 115)", stopOpacity: "1"}} />
-                <stop offset={`${rightOffset || 100}%`} style={{stopColor: "rgb(103, 103, 150)", stopOpacity: "1"}} />
-                <stop offset="100%" style={{stopColor: "rgb(103, 103, 150)", stopOpacity: "1"}} />
-                </linearGradient>
-                <linearGradient id="solids2" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style={{stopColor: "rgb(0, 0, 150)", stopOpacity: "1"}} />
-                <stop offset="100%" style={{stopColor: "rgb(103, 103, 150)", stopOpacity: "1"}} />
-                </linearGradient>
-            </defs>
-        </svg>
-        <div id="left-arrow" draggable="true" onDrag={handleDrag} style={{position: "absolute", left: "50px"}}>
-            <BiLeftArrow />
-        </div>
-        <div id="right-arrow" draggable="true" onDrag={handleDrag} style={{position: "absolute", left: "500px"}}>
-            <BiRightArrow />
+        <div className="relative">
+            <svg id="svg" width="500" height="250">
+                <defs>
+                    <linearGradient id="solids" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style={{stopColor: "rgb(103, 103, 150)", stopOpacity: "1"}} />
+                    <stop offset={`${leftOffset}%`} style={{stopColor: "rgb(103, 103, 150)", stopOpacity: "1"}} />
+                    <stop offset={`${leftOffset}%`} style={{stopColor: "rgb(62, 62, 115)", stopOpacity: "1"}} />
+                    <stop offset={`${rightOffset || 100}%`} style={{stopColor: "rgb(62, 62, 115)", stopOpacity: "1"}} />
+                    <stop offset={`${rightOffset || 100}%`} style={{stopColor: "rgb(103, 103, 150)", stopOpacity: "1"}} />
+                    <stop offset="100%" style={{stopColor: "rgb(103, 103, 150)", stopOpacity: "1"}} />
+                    </linearGradient>
+                    <linearGradient id="solids2" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style={{stopColor: "rgb(0, 0, 150)", stopOpacity: "1"}} />
+                    <stop offset="100%" style={{stopColor: "rgb(103, 103, 150)", stopOpacity: "1"}} />
+                    </linearGradient>
+                </defs>
+            </svg>
+            <div className="text-white bg-gray-700 hover:bg-black font-medium rounded-lg text-sm px-4 py-2 text-center m-5"
+            onClick={() => setFilterPanelVisible(false)}>
+                View {totalQuantity} listings
+            </div>
+            <div id="left-arrow" draggable="true" onDrag={handleDrag} style={{position: "absolute", left: "50px", top: "200px"}}>
+                <BiLeftArrow />
+            </div>
+            <div id="right-arrow" draggable="true" onDrag={handleDrag} style={{position: "absolute", left: "500px", top: "200px"}}>
+                <BiRightArrow />
+            </div>
         </div>
         </>
     );
