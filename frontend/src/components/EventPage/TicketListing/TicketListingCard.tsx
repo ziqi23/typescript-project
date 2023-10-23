@@ -42,6 +42,7 @@ function TicketListingCard({id, eventId, section, price, row, quantity, descript
         mouseHoverSection?.removeAttribute('stroke');
         
     }
+    
 
     return (
         <>

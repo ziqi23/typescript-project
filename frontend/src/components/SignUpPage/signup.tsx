@@ -77,7 +77,7 @@ const Signup = () => {
 
     return (
         <>
-            <Header />
+            <Header fill="bg-gray-900"/>
             <div className="login-main">
                 <div className="login-field">
                     <h1>Sign up</h1>

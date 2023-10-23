@@ -80,7 +80,7 @@ function UserProfile() {
 
     return (
         <>
-            <Header />
+            <Header fill="bg-gray-900"/>
             <div className='flex absolute top-20'>
                 <div className='user-profile-left'>
                     <div

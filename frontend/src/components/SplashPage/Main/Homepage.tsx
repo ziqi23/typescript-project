@@ -1,6 +1,7 @@
 import "./Homepage.css"
 import EventCard from "./../Events/EventCard";
 import Header from "./../Header/Header";
+import homepage from "../../../assets/homepage.jpg";
 import splash1 from "../../../assets/splash1.jpg";
 import splash2 from "../../../assets/splash2.jpg";
 import splash3 from "../../../assets/splash3.jpg";
@@ -12,15 +13,33 @@ import { useEffect, useState } from "react";
 import Footer from "../Footer/footer";
 import { reset } from "../../../store/selectedSection";
 
+type UserLocation = {
+    city: string,
+    region: string
+}
+
 function Homepage() {
     const dispatch = useAppDispatch();
     const events = useAppSelector(state => state.event.data);
     const [filteredEvents, setFilteredEvents] = useState(events);
-    
+    const [userIP, setUserIP] = useState('');
+    const [userLocation, setUserLocation] = useState<UserLocation>({city: "San Francisco", region: "CA"});
+
     useEffect(() => {
         dispatch(getEvents()); // Fetch all events from database
         dispatch(reset());
+
+        fetch("https://api.ipify.org")
+            .then(res => res.text())
+            .then(ip => setUserIP(ip))
     }, [])
+
+    useEffect(() => {
+        fetch(`http://ip-api.com/json/${userIP}`)
+            .then(res => res.json())
+            .then(locationData => setUserLocation(locationData))
+            .catch(error => setUserLocation({city: "San Francisco", region: "CA"}))
+    }, [userIP])
     
     function handleFilter(e : any) { // Locally filter all events for specific criteria to display
         const filter = e.target.getAttribute("data-type");
@@ -43,12 +62,37 @@ function Homepage() {
     }
     return (
         <>
-        <Header />
-        <div className="homepage-main max-width-screen-xl h-96">
-            <img src={splash1} className="h-full w-full"></img>
+        <Header fill=""/>
+        <div className="homepage-image-holder">
+            <img src={homepage} className="absolute object-center"></img>
+        </div>
+        <div className="homepage-main max-width-screen-xl">
             <SearchBar />
         </div>
-        <div className="homepage-event-filters">
+        <div className="homepage-featured-events relative z-20">
+            <p className="text-xl font-bold mb-5 text-white">Featured Events</p>
+            <div className="flex">
+                {filteredEvents && filteredEvents.length && filteredEvents.map(event => (
+                    <EventCard 
+                    id={event._id}
+                    imageUrl={event.eventImageURL} 
+                    name={event.eventTitle}
+                    location={event.eventLocation}
+                    time={event.eventTime}
+                    />
+                ))}
+            </div>
+        </div>
+        <div className="pt-8">
+            <p className="text-xl font-bold mb-5 text-black">Browse Events</p>
+            <p className="text-xl font-bold mb-5 text-black">
+                {`${userLocation.city}, ${userLocation.region}`}
+            </p>
+            <div>
+            {/* {currentLocation ? currentLocation : null} */}
+            </div>
+        </div>
+        <div className="homepage-event-filters relative z-20">
             <p className="text-xl font-bold mb-5">Categories</p>
             <button data-type="all" onClick={(e) => handleFilter(e)} className="bg-transparent hover:bg-gray-100 outline text-black font-medium py-2 px-4 mr-5 rounded">All events</button>
             <button data-type="concert" onClick={(e) => handleFilter(e)} className="bg-transparent hover:bg-gray-100 outline text-black font-medium py-2 px-4 mr-5 rounded">Concerts</button>

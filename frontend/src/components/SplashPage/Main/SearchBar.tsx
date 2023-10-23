@@ -57,7 +57,7 @@ function SearchBar() {
 
     return (
         <>
-            <form className="search-form">
+            <form className="relative z-40 search-form">
                 <input type="text" placeholder="Search an event" onChange={(e) => handleChange(e)}></input>
                 <button type="submit"><AiOutlineSearch /></button>
             </form>

@@ -24,7 +24,7 @@ const Login = () => {
 
     return (
         <>
-            <Header />
+            <Header fill="bg-gray-900"/>
             <div className="login-main">
                 <div className="login-field">
                     <h1>Log in</h1>

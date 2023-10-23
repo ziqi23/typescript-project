@@ -7,7 +7,7 @@ function EventHomepage() {
 
     return (
         <div className="event-page">
-            <Header />
+            <Header fill="bg-gray-900"/>
             <div className="event-main">
                 <TicketListing/>
                 <VenueMap/>

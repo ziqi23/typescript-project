@@ -1,15 +1,26 @@
-.homepage-main img {
+.homepage-main {
+    height: 700px;
+}
+
+.homepage-image-holder {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    height: 1200px;
+    width: 100%;
+    background-color: black;
+}
+
+.homepage-image-holder img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
 }
-
-.homepage-main {
-    height: 60vh;
-}
-
 .homepage-event-filters {
     margin: 2rem;
 }
 
 .homepage-featured-events {
+    height: 500px;
     margin: 2rem;
 }
