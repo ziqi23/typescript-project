@@ -12,6 +12,7 @@ import { getEvents } from "../../../store/event";
 import { useEffect, useState } from "react";
 import Footer from "../Footer/footer";
 import { reset } from "../../../store/selectedSection";
+import Line from "../../Utils/Line";
 
 type UserLocation = {
     city: string,
@@ -70,7 +71,7 @@ function Homepage() {
             <SearchBar />
         </div>
         <div className="homepage-featured-events relative z-20">
-            <p className="text-xl font-bold mb-5 text-white">Featured Events</p>
+            <p className="text-xl font-bold ml-5 mb-5 text-white">Featured Events</p>
             <div className="flex">
                 {filteredEvents && filteredEvents.length && filteredEvents.map(event => (
                     <EventCard 
@@ -83,15 +84,13 @@ function Homepage() {
                 ))}
             </div>
         </div>
-        <div className="pt-8">
-            <p className="text-xl font-bold mb-5 text-black">Browse Events</p>
-            <p className="text-xl font-bold mb-5 text-black">
+        <div className="mx-8">
+            <p className="text-xl font-bold mb-2 ml-5 text-gray-900">Browse Events</p>
+            <p className="text-4xl font-bold mb-5 ml-5 text-black">
                 {`${userLocation.city}, ${userLocation.region}`}
             </p>
-            <div>
-            {/* {currentLocation ? currentLocation : null} */}
-            </div>
         </div>
+        <Line />
         <div className="homepage-event-filters relative z-20">
             <p className="text-xl font-bold mb-5">Categories</p>
             <button data-type="all" onClick={(e) => handleFilter(e)} className="bg-transparent hover:bg-gray-100 outline text-black font-medium py-2 px-4 mr-5 rounded">All events</button>

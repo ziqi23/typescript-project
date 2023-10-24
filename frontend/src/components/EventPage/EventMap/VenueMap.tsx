@@ -19,13 +19,13 @@ type ParsedSection = {
 function VenueMap() {
     const dispatch = useAppDispatch();
     const { id } = useParams<{id : string}>();
+    const mapElement = useRef<HTMLDivElement>(null);
     const events = useAppSelector(state => state.event.data);
-    const currentEvent = events ? events.filter(event => event._id === id)[0] : null;
     const selectedSections = useAppSelector(state => state.selectedSection.data);
     const tickets = useAppSelector(state => state.ticket.data);
-    const [zoom, setZoom] = useState(1);
-    const mapElement = useRef<HTMLDivElement>(null);
     const venueData = useAppSelector(state => state.stadium.data);
+    const currentEvent = events ? events.filter(event => event._id === id)[0] : null;
+    const [zoom, setZoom] = useState(1);
     const [hoveredSection, setHoveredSection] = useState<ParsedSection | null>(null);
     const [offsetX, setOffsetX] = useState(0);
     const [offsetY, setOffsetY] = useState(0);
@@ -33,45 +33,39 @@ function VenueMap() {
     const [initialY, setInitialY] = useState(0);
     const [scale, setScale] = useState(1);
 
-    // handle drag
+    // set initial pointer position on mousedown
     async function handleMouseDown(e : any) {
         setInitialX(e.clientX);
         setInitialY(e.clientY);
-        // if (e.target.getAttribute('listener') !== 'true') {
-        //     e.currentTarget.addEventListener('mousemove', handleMouseMove);
-        //     e.currentTarget.setAttribute('listener', 'true');
-        // }
-        // console.log("down", initialX, initialY)
     }
-
+    
+    // add event handler to listen for mousemove once initial pointer position updated
     useEffect(() => {
-        if (initialX || initialY) {
+        if (initialX && initialY) {
             window.addEventListener('mousemove', handleMouseMove);
         }
-    }, [initialX, initialY])
-
-    const handleMouseMove = useCallback((e : any) => {
-        console.log("move", e, initialX, initialY)
-        setOffsetX(e.clientX - initialX);
-        setOffsetY(e.clientY - initialY)
-    },[]);
-
+    }, [initialX])
+    
+    // remove event handler on drag release
     function handleMouseUp(e : any) {
-        // console.log("up", e.currentTarget)
+        setInitialX(0);
+        setInitialY(0);
         window.removeEventListener('mousemove', handleMouseMove);
-        // e.currentTarget.setAttribute('listener', 'false');
     }
-    // add color based on availability
 
-    // update tooltip
-
-    // add padding
+    // use "useCallback" hook to keep reference to event handler function for proper removal
+    const handleMouseMove = useCallback((e : any) => {
+        if (initialX && initialY) {
+            setOffsetX(e.clientX - initialX);
+            setOffsetY(e.clientY - initialY)
+        }
+    }, [initialX, initialY]);
 
     // style buttons, dynamic sizing
     window.addEventListener('resize', handleResize)
 
+    // find svg's min and max xy-coords and scale into parent element bounding box
     function handleResize() {
-        console.log(mapElement.current?.getBoundingClientRect())
         let maxX = 0;
         let maxY = 0;
         venueData?.forEach(section => {
@@ -84,13 +78,13 @@ function VenueMap() {
             const height = rect.height;
             setScale(Math.min(height / maxY - 0.1, width / maxX - 0.1));
         }
-        // find min and max coords, compare to bounding box and calculate scaling variable.
     }
 
     useEffect(() => {
         handleResize();
     }, [])
 
+    // Handle user clicking on a section of the event map, either add to selected or remove from selected
     window.addEventListener('click', handleClick);
 
     function handleClick(e : any) {
@@ -105,75 +99,60 @@ function VenueMap() {
         }
     }
 
+    // Highlight sections with available tickets in light green, selected sections in dark green
     useEffect(() => {
-        document.querySelectorAll("[data-section]").forEach(section => {
-            let a = section.getAttribute("data-section")
-            if (tickets?.some(ticket => ticket.section === a)) {
-                if (a && selectedSections.includes(a)) { // if section has been selected, highlight in different color
-                    section.setAttribute("fill", "rgb(109, 193, 109)");
+        document.querySelectorAll("[data-section]").forEach(element => {
+            let section = element.getAttribute("data-section")
+            if (tickets?.some(ticket => ticket.section === section)) {
+                if (section && selectedSections.includes(section)) {
+                    element.setAttribute("fill", "rgb(109, 193, 109)");
                 }
                 else {
-                    section.setAttribute("fill", "rgb(185, 212, 185)");
+                    element.setAttribute("fill", "rgb(185, 212, 185)");
                 } 
             }
         })
     }, [selectedSections])
 
-
-
+    // Fetch event stadium data
     useEffect(() => {
         if (currentEvent?.stadiumURL) {
             dispatch(getStadium(currentEvent.stadiumURL));
         }
-    }, [])
+    }, [currentEvent])
 
-    // useEffect(() => {
-    //     function handleWheel(e : WheelEvent) {
-    //         if (e.deltaY > 0) {
-    //             setZoom(zoom => zoom * 0.99);
-    //         }
-    //         else {
-    //             setZoom(zoom => zoom * 1.01);
-    //         }
-    //     }
-
-    //     window.addEventListener('wheel', handleWheel);
-    //     // return mapElement?.current?.removeEventListener('scroll', handleScroll);
-
-    // }, [mapElement.current])
-
+    // Handle tooltip display when mouse hovers over a section
     function handleMouseOver(e : any) {
         const sectionId = e.target.getAttribute('data-section');
         const sectionData = venueData ? venueData.filter(section => section.id === sectionId)[0] : null;
         setHoveredSection(sectionData);
     }
 
-    // Use section # data to also create tooltip of row x - y
     if (venueData) {
         return (
             <div className="venue-map-container relative" ref={mapElement}>
                 {hoveredSection && (
-                    <div className='absolute bg-black text-white top-5'>
+                    <div className='absolute px-3 py-2 font-bold bg-black text-white top-5 rounded-lg'>
                         Section {hoveredSection.id}, 
-                        Row {hoveredSection.rows ? hoveredSection.rows[0] : null}
-                        to {hoveredSection.rows ? hoveredSection.rows[hoveredSection.rows.length - 1] : null}
+                        Rows {hoveredSection.rows ? hoveredSection.rows[0] : null}
+                        {" to"} {hoveredSection.rows ? hoveredSection.rows[hoveredSection.rows.length - 1] : null}
                     </div>
                 )}
-                <svg className="venue-map" transform={`scale(${zoom} ${zoom})`} onMouseDown={(e) => handleMouseDown(e)} onMouseUp={(e) => handleMouseUp(e)}>
+                <svg className="venue-map" onMouseDown={(e) => handleMouseDown(e)} onMouseUp={(e) => handleMouseUp(e)}>
                     {venueData.map(section => {
                         if (tickets?.some(ticket => ticket.section === section.id)) {
                             return (
                                 <>
-                                <path transform={`translate(${offsetX}, ${offsetY}) scale(${scale} ${scale})`} fill="rgb(185, 212, 185)" data-section={section.id} data-selected="false" d={section.svg} onMouseOver={handleMouseOver} onMouseLeave={() => setHoveredSection(null)}></path>
-                                <text transform={`translate(${offsetX}, ${offsetY}) scale(${scale} ${scale})`} pointerEvents="none" x={section.textX - 10} y={section.textY} stroke='#000000'>{section.id}</text>
+                                <path transform={`translate(${offsetX}, ${offsetY}) scale(${scale * zoom} ${scale * zoom})`} fill="rgb(185, 212, 185)" data-section={section.id} data-selected="false" d={section.svg} onMouseOver={handleMouseOver} onMouseLeave={() => setHoveredSection(null)}></path>
+                                <text transform={`translate(${offsetX}, ${offsetY}) scale(${scale * zoom} ${scale * zoom})`} pointerEvents="none" x={section.textX - 10} y={section.textY} stroke='#000000'>{section.id}</text>
                                 </>
                             )
                         }
                         else {
                             return (
                                 <>
-                                <path transform={`translate(${offsetX}, ${offsetY}) scale(${scale} ${scale})`} fill="gray" data-section={section.id} data-selected="false" d={section.svg} onMouseOver={handleMouseOver} onMouseLeave={() => setHoveredSection(null)}></path>
-                                <text transform={`translate(${offsetX}, ${offsetY}) scale(${scale} ${scale})`} pointerEvents="none" x={section.textX - 10} y={section.textY} stroke='#000000'>{section.id}</text>
+                                <path transform={`translate(${offsetX}, ${offsetY}) scale(${scale * zoom} ${scale * zoom})`} fill="gray" data-section={section.id} data-selected="false" d={section.svg} onMouseOver={handleMouseOver} onMouseLeave={() => setHoveredSection(null)}></path>
+                                <text transform={`translate(${offsetX}, ${offsetY}) scale(${scale * zoom} ${scale * zoom})`} pointerEvents="none" x={section.textX - 10} y={section.textY} stroke='#000000'>{section.id}</text>
                                 </>
                             )
                         }
@@ -182,7 +161,7 @@ function VenueMap() {
                 </svg>
                 <div className='map-functional-buttons'>
                     <button onClick={() => {setZoom(zoom * 1.1)}}><AiOutlinePlus /></button>
-                    <button onClick={() => {setZoom(1)}}><GrPowerReset /></button>
+                    <button onClick={() => {setZoom(1); setOffsetX(0); setOffsetY(0)}}><GrPowerReset /></button>
                     <button onClick={() => {setZoom(zoom * 0.9)}}><AiOutlineMinus /></button>
                 </div>
             </div>

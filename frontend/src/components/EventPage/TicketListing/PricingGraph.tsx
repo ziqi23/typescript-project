@@ -10,6 +10,7 @@ type Data = {
 }
 
 type GraphProps = {
+    quantity: number,
     minPrice: number,
     maxPrice: number,
     setMinPrice: React.Dispatch<React.SetStateAction<number>>,
@@ -17,7 +18,7 @@ type GraphProps = {
     setFilterPanelVisible: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function PricingGraph({minPrice, maxPrice, setMinPrice, setMaxPrice, setFilterPanelVisible} : GraphProps) {
+function PricingGraph({quantity, minPrice, maxPrice, setMinPrice, setMaxPrice, setFilterPanelVisible} : GraphProps) {
     const ticketData = useAppSelector(state => state.ticket.data); // Pull ticket data from store
     const selectedSections = useAppSelector(state => state.selectedSection.data); // Pull selected sections from store
     const [leftOffset, setLeftOffset] = useState(0); // Set left offset location on page
@@ -30,13 +31,26 @@ function PricingGraph({minPrice, maxPrice, setMinPrice, setMaxPrice, setFilterPa
 
     useEffect(() => {
         let filteredTicketData;
-        if (selectedSections.length) {
-            filteredTicketData = ticketData?.filter(ticket => selectedSections.includes(ticket.section));
+        if (selectedSections.length && quantity) {
+            filteredTicketData = ticketData?.filter(ticket => (
+                selectedSections.includes(ticket.section) && ticket.quantitySplit.includes(quantity)
+            ));
+        }
+        else if (selectedSections.length) {
+            filteredTicketData = ticketData?.filter(ticket => (
+                selectedSections.includes(ticket.section)
+            ));
+        }
+        else if (quantity) {
+            filteredTicketData = ticketData?.filter(ticket => (
+                ticket.quantitySplit.includes(quantity)
+            ));
         }
         else {
             filteredTicketData = ticketData;
         }
-        if (filteredTicketData) {
+
+        if (filteredTicketData && filteredTicketData.length) {
             // Track local min and max price while iterating through tickets to find global min and max
             let minPrice = filteredTicketData[0].price;
             let maxPrice = filteredTicketData[0].price;
@@ -58,6 +72,10 @@ function PricingGraph({minPrice, maxPrice, setMinPrice, setMaxPrice, setFilterPa
             setMaxPrice(maxPrice);
             setTotalQuantity(totalQuantity);
             setAverageTicketPrice(Math.ceil(totalPrice / totalQuantity));
+            setLeftOffset(0);
+            setRightOffset(100);
+            (document.querySelector("#left-arrow") as HTMLElement).style.left = "50px";
+            (document.querySelector("#right-arrow") as HTMLElement).style.left = "500px";
 
             // Create map to store {price: frequency} pairs for input into D3
             let prices = new Map<any, any>();       
@@ -80,10 +98,14 @@ function PricingGraph({minPrice, maxPrice, setMinPrice, setMaxPrice, setFilterPa
             dataset.push({x: 20, y: 0})
             setDataset(dataset);
         }
-    }, [ticketData, selectedSections])
+        else {
+            setTotalQuantity(0);
+        }
+    }, [quantity, ticketData, selectedSections])
 
     // Create D3 line graph
     const svg = d3.select("#svg");
+    d3.selectAll("#svg > path").remove();
     const width = 450;
     const height = 200;
 
@@ -102,11 +124,7 @@ function PricingGraph({minPrice, maxPrice, setMinPrice, setMaxPrice, setFilterPa
         .attr("transform", "translate(50, 0)")
         .attr("d", line)
         .style("fill", "url(#solids")
-        // .style("fill", "url(#solids2)")
-        // .style("stroke", "#CC0000")
         .style("stroke-width", "1");
-    
-    
 
     // On drag event, update the tickets displayed, arrow position on page, min/max price, and eventually event map availability
     function handleDrag(e : any) {
@@ -128,23 +146,40 @@ function PricingGraph({minPrice, maxPrice, setMinPrice, setMaxPrice, setFilterPa
 
     useEffect(() => {
         let filteredTicketData;
-        if (selectedSections.length) {
-            filteredTicketData = ticketData?.filter(ticket => selectedSections.includes(ticket.section));
+        if (selectedSections.length && quantity) {
+            filteredTicketData = ticketData?.filter(ticket => (
+                selectedSections.includes(ticket.section) && ticket.quantitySplit.includes(quantity)
+            ));
+        }
+        else if (selectedSections.length) {
+            filteredTicketData = ticketData?.filter(ticket => (
+                selectedSections.includes(ticket.section)
+            ));
+        }
+        else if (quantity) {
+            filteredTicketData = ticketData?.filter(ticket => (
+                ticket.quantitySplit.includes(quantity)
+            ));
         }
         else {
             filteredTicketData = ticketData;
         }
+
         if (filteredTicketData) {
             setTotalQuantity(filteredTicketData.filter(ticket => ticket.price >= minPrice && ticket.price <= maxPrice).length)
         }
         document.querySelectorAll("[data-section]").forEach(section => {
             let data = section.getAttribute("data-section");
-            console.log(ticketData)
             if (!ticketData?.some(ticket => ticket.section === data && ticket.price >= minPrice && ticket.price <= maxPrice)) {
                 section.setAttribute("fill", "gray");
             }
             else {
-                section.setAttribute("fill", "rgb(185, 212, 185)");
+                if (data && selectedSections.includes(data)) {
+                    section.setAttribute("fill", "rgb(109, 193, 109)");
+                }
+                else {
+                    section.setAttribute("fill", "rgb(185, 212, 185)");
+                }
             }
         })
     }, [minPrice, maxPrice])

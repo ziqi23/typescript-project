@@ -9,6 +9,7 @@ type Ticket = {
     p: number, // price
     q: number, // quantity
     n: string, // note
+    sp: number[] // available quantities to be sold
 }
 
 // SeatGeek
@@ -26,6 +27,7 @@ type ParsedTicket = {
     row: string,
     price: number,
     quantity: number,
+    quantitySplit: number[],
     description: string
 }
 
@@ -77,12 +79,11 @@ export const getTicket = createAsyncThunk('ticket/getTicket', async (eventUrl : 
         // }
     });
     const data = await res.json();
-    console.log(data)
     // parse data here. tickets need data such as price, quantity, location and special features / notices
     let formattedTicket : ParsedTicket[] = [];
     data.forEach((ticket : Ticket) => {
         if (ticket.n.search(/parking only/i) === -1) {
-            formattedTicket.push({ id: ticket.id, eventId: ticket.eid, section: ticket.sid, row: ticket.r, price: ticket.p, quantity: ticket.q, description: ticket.n })
+            formattedTicket.push({ id: ticket.id, eventId: ticket.eid, section: ticket.sid, row: ticket.r, price: ticket.p, quantity: ticket.q, quantitySplit: ticket.sp, description: ticket.n })
         }
     })
     return formattedTicket;

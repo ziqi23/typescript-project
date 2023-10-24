@@ -6,6 +6,8 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
 import PricingGraph from './PricingGraph';
 import { GiSettingsKnobs } from 'react-icons/gi'
+import Line from '../../Utils/Line';
+import { reset } from '../../../store/selectedSection';
 
 type ParsedTicket = {
     id: string,
@@ -31,113 +33,110 @@ function TicketListing() {
     const [displayedTickets, setDisplayedTickets] = useState<ParsedTicket[] | null>([]);
     const [minPrice, setMinPrice] = useState(-Infinity);
     const [maxPrice, setMaxPrice] = useState(Infinity);
-    const [quantity, setQuantity] = useState(1);
-    const [pricePanelVisible, setPricePanelVisible] = useState(false);
+    const [quantity, setQuantity] = useState(0);
     const [quantityPanelVisible, setQuantityPanelVisible] = useState(false);
     const [filterPanelVisible, setFilterPanelVisible] = useState(false);
+    const [availableQuantities, setAvailableQuantities] = useState<number[]>([]);
 
     // Fetch ticket data upon mounting
     useEffect(() => {
         if (currentEvent?.tickpickURL) {
             dispatch(getTicket(currentEvent.tickpickURL));
         }
-    }, [])
+    }, [events])
 
     // Filter to handle => price, quantity, sections
     useEffect(() => {
-        let ticketsToDisplay : ParsedTicket[] = [];
+        let ticketsToDisplay = allTickets;
+        if (ticketsToDisplay && allTickets) {
+            if (selectedSections.length && quantity) {
+                ticketsToDisplay = allTickets?.filter(ticket => (
+                    selectedSections.includes(ticket.section) && ticket.quantitySplit.includes(quantity)
+                ));
+            }
+            else if (selectedSections.length) {
+                ticketsToDisplay = allTickets?.filter(ticket => (
+                    selectedSections.includes(ticket.section)
+                ));
+            }
+            else if (quantity) {
+                ticketsToDisplay = allTickets?.filter(ticket => (
+                    ticket.quantitySplit.includes(quantity)
+                ));
+            }
+        
+            // Handle price filter
+            ticketsToDisplay = ticketsToDisplay.filter(ticket => ticket.price >= minPrice);
+            ticketsToDisplay = ticketsToDisplay.filter(ticket => ticket.price <= maxPrice);
 
-        // Handle section filter
-        if (allTickets && selectedSections.length === 0) {
-            ticketsToDisplay = allTickets;
-        }
-        else {
-            allTickets?.forEach(ticket => {
-                if (selectedSections.includes(ticket.section)) {
-                    ticketsToDisplay.push(ticket);
-                }
+            // highlight available quantities
+            let availability : number[] = [];
+            ticketsToDisplay.forEach(ticket => {
+                ticket.quantitySplit.forEach(quantity => {
+                    if (quantity <= 10 && !availability.includes(quantity)) {
+                        availability.push(quantity);
+                    }
+                })
             })
+            setAvailableQuantities(availability);
         }
-    
-        // Handle price filter
-        ticketsToDisplay = ticketsToDisplay.filter(ticket => ticket.price >= minPrice);
-        ticketsToDisplay = ticketsToDisplay.filter(ticket => ticket.price <= maxPrice);
-
-        // Handle quantity filter
-        ticketsToDisplay = ticketsToDisplay.filter(ticket => {
-            return ticket.quantity >= quantity
-        });
-
         setDisplayedTickets(ticketsToDisplay);
     }, [selectedSections, minPrice, maxPrice, quantity])
-    
-    function handleMinPrice(e : ChangeEvent) {
-        let minPrice = parseInt((e.target as HTMLInputElement).value);
-        if (isNaN(minPrice)) {
-            minPrice = -Infinity;
-        }
-        setMinPrice(minPrice);
-    }
-    
-    function handleMaxPrice(e : ChangeEvent) {
-        let maxPrice = parseInt((e.target as HTMLInputElement).value);
-        if (isNaN(maxPrice)) {
-            maxPrice = Infinity;
-        }
-        setMaxPrice(maxPrice);
-    }
 
-    function handleSortTickets(e : any) {
-        console.log(e.target.classList)
-        if (e.target.classList.contains('bg-gray-300')) {
-            e.target.classList.remove('bg-gray-300');
+    console.log(availableQuantities)
+    function handleSetQuantity(e : any) {
+        if (isNaN(parseInt(e.target.innerHTML))) {
+            setQuantity(0);
         }
         else {
-            e.target.classList.add('bg-gray-300');
-            let ticketsToDisplay = displayedTickets ? displayedTickets.sort((a, b) => a.price - b.price) : [];
-            setDisplayedTickets(ticketsToDisplay);
+            setQuantity(parseInt(e.target.innerHTML));
         }
+        setQuantityPanelVisible(false);
     }
 
-    function handleSetQuantity(e : any) {
-        setQuantity(parseInt(e.target.innerHTML));
+    function handleResetFilters() {
+        setMinPrice(-Infinity);
+        setMaxPrice(Infinity);
+        setQuantity(0);
+        dispatch(reset());
     }
 
     return (
         <div className="ticket-listing-container relative z-10">
-            <div className="mt-5 p-5">
+            <div className="my-5 p-5">
                 <p className="text-xl font-bold">{currentEvent?.eventTitle}</p>
                 <p className="mt-2 text-base">{currentEvent?.eventTime} · {currentEvent?.eventLocation}</p>
             </div>
-            <div className="filters" onClick={() => setFilterPanelVisible(!filterPanelVisible)}>
-                <div className="pointer bg-transparent text-black font-semibold border border-gray-500 hover:border-black rounded-full py-2 px-4 mr-3"><GiSettingsKnobs className='filter-logo'/></div>
-                <button type="button" onClick={() => setPricePanelVisible(!pricePanelVisible)} className="bg-transparent text-black font-semibold border border-gray-500 hover:border-black rounded-full py-2 px-4 mr-3">Price</button>
-                <button type="button" onClick={() => setQuantityPanelVisible(!quantityPanelVisible)} className="bg-transparent text-black font-semibold border border-gray-500 hover:border-black rounded-full py-2 px-4 mr-3">Quantity</button>
-                <button type="button" onClick={e => handleSortTickets(e)} className="bg-transparent text-black font-semibold border border-gray-500 hover:border-black rounded-full py-2 px-4 mr-3">Lowest Price First</button>
-            </div>
-            {filterPanelVisible && (
-                <PricingGraph minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice} setFilterPanelVisible={setFilterPanelVisible}/>
-            )}
-            {pricePanelVisible && (
-                <div className='flex bg-gray-100 items-center'>
-                    <div className='rounded-full py-2 px-4'>
-                        $<input className="user-price-input px-1" onChange={handleMinPrice}></input>
-                    </div>
-                    to 
-                    <div className='rounded-full py-2 px-4'>
-                        $<input className="user-price-input px-1" onChange={handleMaxPrice}></input>
-                    </div>
+            <div className="filters p-5 my-2">
+                <div className="filter-logo-container mr-3" onClick={() => setFilterPanelVisible(!filterPanelVisible)}>
+                    <GiSettingsKnobs className='filter-logo'/>
                 </div>
-            )}
+                <button type="button" onClick={() => setQuantityPanelVisible(!quantityPanelVisible)} className="bg-transparent text-black font-semibold border border-gray-500 hover:border-black rounded-full py-2 px-4 mr-3">
+                    {quantity ? `${quantity} Ticket${quantity > 1 ? "s" : ""}`: "Quantity"}
+                </button>
+                <button type="button" onClick={() => handleResetFilters()} className="bg-transparent text-black font-semibold border border-gray-500 hover:border-black rounded-full py-2 px-4 mr-3">
+                    Reset All Filters
+                </button>
+            </div>
             {quantityPanelVisible && (
                 <div className='flex items-center'>
                     <div className='flex items-center justify-content py-2 px-4'>
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(ele => (
-                            <div onClick={(e) => handleSetQuantity(e)} className='bg-gray-300 hover:bg-gray-500 mr-3 rounded py-2 px-2 border-solid border-sky-500'>{`${ele}`}</div>
-                        ))}
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(ele => {
+                            if (availableQuantities.includes(ele)) {
+                                return <div onClick={(e) => handleSetQuantity(e)} className='cursor-pointer bg-gray-300 hover:bg-gray-500 mr-3 rounded py-2 px-2 border-solid border-sky-500'>{`${ele}`}</div>
+                            }
+                            else {
+                                return <div className='cursor-pointer bg-gray-900 mr-3 rounded py-2 px-2 border-solid border-sky-500'>{`${ele}`}</div>
+                            }
+                        })}
+                        <div onClick={(e) => handleSetQuantity(e)} className='cursor-pointer bg-gray-300 hover:bg-gray-500 mr-3 rounded py-2 px-2 border-solid border-sky-500'>Any Quantity</div>
                     </div>
                 </div>
             )}
+            {filterPanelVisible && (
+                <PricingGraph quantity={quantity} minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice} setFilterPanelVisible={setFilterPanelVisible}/>
+            )}
+            <Line />
             <div className='z-30'>
                 {displayedTickets?.map(ticket => (
                     <TicketListingCard {...ticket}/>
