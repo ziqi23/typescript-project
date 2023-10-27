@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppSelector } from '../../../store/hooks';
 import './TicketListingCard.css'
 import { Link, useParams } from 'react-router-dom';
@@ -18,19 +18,17 @@ function TicketListingCard({id, eventId, section, price, row, quantity, descript
     const venueData = useAppSelector(state => state.stadium.data);
     const selectedSections = useAppSelector(state => state.selectedSection.data);
     const [confirmationVisible, setConfirmationVisible] = useState(false);
-    
-    // function createAlert(desiredSections : Number[], desiredPrice : String) {
-    //     const eventId = useParams<{id : string}>();
-    //     fetch('/api/alerts', {
-    //         method: "POST",
-    //         // body: {
-    //         //     // userId, 
-    //         //     eventId, 
-    //         //     desiredSections, 
-    //         //     desiredPrice
-    //         // }
-    //     })
-    // }
+    const [flag, setFlag] = useState(false);
+
+    // partial view, side view, obstructed view, partial obstructed view, limited view
+    useEffect(() => {
+        const constraints = ["partial", "side", "obstructed", "limited"];
+        constraints.forEach(constraint => {
+            if (description.toLowerCase().includes(constraint)) {
+                setFlag(true); // BUG
+            }
+        })
+    }, [selectedSections])
 
     function handleMouseEnter() {
         const mouseHoverSection = document.querySelector(`[data-section="${section}"]`);
@@ -40,9 +38,7 @@ function TicketListingCard({id, eventId, section, price, row, quantity, descript
     function handleMouseLeave() {
         const mouseHoverSection = document.querySelector(`[data-section="${section}"]`);
         mouseHoverSection?.removeAttribute('stroke');
-        
     }
-    
 
     return (
         <>
@@ -50,11 +46,11 @@ function TicketListingCard({id, eventId, section, price, row, quantity, descript
             <div className='ticket-pricing'>
                 <p className='ticket-pricing-bold'>${price} each, </p><p>all fees included</p>
             </div>
-            <div className='ticket-quantity'>{quantity} tickets</div>
+            <div className='ticket-quantity'>{quantity} ticket{quantity > 1 ? "s" : ""}</div>
             <div className='ticket-location'>
                 <p>Section {section}, </p><p>Row {row}</p>
             </div>
-            <div>{description.slice(0, 100)}...</div>
+            <div>{flag ? "Obstructed or Limited View": ""}</div>
         </div>
         {confirmationVisible && (
             <Alert {...{id, eventURLId:eventId, section, price, row, quantity, description, setVisible: setConfirmationVisible}}/>

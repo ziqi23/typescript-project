@@ -6,6 +6,10 @@
 
 import mongoose from 'mongoose';
 
+// need sub categories (NFL, NBA, Rock, Country, Comedy, Theatre, etc)
+// need performer(s)
+// need event city, event state, event geolocation
+
 const EventSchema = new mongoose.Schema({
     tickpickURL: {type: String, required: true}, // Expand to other sites in the future
     stadiumURL: {type: String, required: true},

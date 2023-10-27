@@ -27,7 +27,6 @@ router.post('/', async (req, res) => {
     if (!userId || !eventId || !desiredSections || !desiredPrice) {
         res.status(400).send("Missing fields");
     }
-    console.log(desiredSections)
     const formattedDesiredSections : Number[] = desiredSections.map(ele => parseInt(ele))
     const time = Date.now();
 

@@ -5,6 +5,7 @@ import alertRouter from './router/alertRouter';
 import eventRouter from './router/eventRouter';
 import dotenv from 'dotenv'
 import bodyParser from 'body-parser';
+import runScheduledJob from './cron/cron.ts';
 
 const app = express();
 
@@ -25,3 +26,5 @@ const MONGO_URL = `mongodb+srv://brianzou1:${MONGO_PASSWORD}@cluster0.5dp8qt5.mo
 mongoose.Promise = Promise;
 mongoose.connect(MONGO_URL);
 mongoose.connection.on(`error`, (error : Error) => console.log(error));
+
+runScheduledJob();
